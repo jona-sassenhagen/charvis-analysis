@@ -178,7 +178,7 @@ peaks = peaks*10;
 
 % repeat for semantic violation trials with slightly changed parameters: checks top of sort for most negative result; stores N4 peak latency and equivalent RT in rtN4 and peaksN4
 
-D(376:1000,:) = 0;peaksN4=[];rtN4=[];
+D(150:200,:) = 0;peaksN4=[];rtN4=[];
 for X = 1:(length(outvar6)-30)
 data = mean(D(10:(outvar6(X)/4)+10,X:X+30),2);lat = mean(outvar6(:,X:X+30),2);[Y,I]=sort(data);peaksN4=[peaksN4,I(1)+10];rtN4 = [rtN4,lat];
 end;
@@ -190,7 +190,6 @@ peaksN4 = peaksN4*4;
 %figure;plot(rtN4,peaksN4,'o')
 
 % calculate and plot skipped correlation (requires Robust Correlation toolbox by Rousselet & Pernet!)
-% note that for plot in submitted version, scales of the two plots where adjusted manually to be identical (1.5s by 1.5s)!
 skipped_correlation(rtN4,peaksN4);
 skipped_correlation(rt,peaks);
 
