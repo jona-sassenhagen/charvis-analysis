@@ -1,0 +1,200 @@
+% "Charvis
+% Butterfly ERP - Script
+% This script plots Butterfly ERPs and scalp topos. Take a look at the ERPimage script for the meanings of the variable.
+
+%eeglab;
+
+%set variables
+ALLEEG=[];EEG=[];allerp=[];allerp2=[];allerp3=[];
+clear synerp1 synerp2 synerp3 semerp1 semerp2 semerp3 outdata1 outdata2 outdata3;
+syn1 = {'S211'  'S213'}
+syn2 = {'S221' 'S223'}
+syn3 = { 'S231'  }
+sem1 = {  'S212' 'S214'}
+sem2 = { 'S222' 'S224' }
+sem3 = {  'S232' }
+control1={'S210' }
+control2={ 'S220'}
+control3={ 'S230'}
+
+% initiate main loop across subjects
+% for S = 1:20 
+S = 2
+        filename = ['/home/jona/charvis/',num2str((S),'%02i'),'_charvis.set'];
+
+
+       filename = '/home/jona/jonafiles/charvis2.set'
+
+% load data
+	EEG = pop_loadset('filename',filename);
+
+% epoch around syntactic violation trials
+EEG = pop_epoch( EEG, syn1, [-1.5 2.5], 'epochinfo', 'yes');
+
+% remove artifact ICs
+% comment out if you do not have IC clusters for eye artefacts
+EEG = pop_subcomp(EEG,[1 3]);
+%[EEG.clusters.saccade EEG.clusters.blink]
+% loop to collect data
+
+% initiate sub loop for target electrodes(excluding eye and mastoid electrodes)
+% you could also plot all electrodes if you like looking at eye electrodes and mastoids
+for elec = 1:length(EEG.chanlocs) 				% depends on final chan config
+	outdata = squeeze(EEG.data(elec,:,:));
+	synerp1(elec,:,S) = mean(outdata,2);
+
+end;
+
+	EEG = pop_loadset('filename',filename);
+
+% epoch around syntactic violation trials
+EEG = pop_epoch( EEG, syn2, [-1.5 2.5], 'epochinfo', 'yes');
+
+% remove artifact ICs
+% comment out if you do not have IC clusters for eye artefacts
+EEG = pop_subcomp(EEG,[1 3]);
+
+% loop to collect data
+
+% initiate sub loop for target electrodes(excluding eye and mastoid electrodes)
+% you could also plot all 33 electrodes if you like looking at eye electrodes and mastoids
+for elec = 1:length(EEG.chanlocs) 				% depends on final chan config
+	outdata = squeeze(EEG.data(elec,:,:));
+	synerp2(elec,:,S) = mean(outdata,2);
+
+end;
+
+	EEG = pop_loadset('filename',filename);
+
+% epoch around syntactic violation trials
+EEG = pop_epoch( EEG, syn3, [-1.5 2.5], 'epochinfo', 'yes');
+
+% remove artifact ICs
+% comment out if you do not have IC clusters for eye artefacts
+EEG = pop_subcomp(EEG,[1 3]);
+
+% loop to collect data
+
+% initiate sub loop for target electrodes(excluding eye and mastoid electrodes)
+% you could also plot all 33 electrodes if you like looking at eye electrodes and mastoids
+for elec = 1:length(EEG.chanlocs) 				% depends on final chan config
+	outdata = squeeze(EEG.data(elec,:,:));
+	synerp3(elec,:,S) = mean(outdata,2);
+
+end;
+
+
+% load data
+	EEG = pop_loadset('filename',filename);
+
+% epoch around semtactic violation trials
+EEG = pop_epoch( EEG, sem1, [-1.5 2.5], 'epochinfo', 'yes');
+
+% remove artifact ICs
+% comment out if you do not have IC clusters for eye artefacts
+EEG = pop_subcomp(EEG,[1 3]);
+
+% loop to collect data
+
+% initiate sub loop for target electrodes(excluding eye and mastoid electrodes)
+% you could also plot all 33 electrodes if you like looking at eye electrodes and mastoids
+for elec = 1:length(EEG.chanlocs) 				% depends on final chan config
+	outdata = squeeze(EEG.data(elec,:,:));
+	semerp1(elec,:,S) = mean(outdata,2);
+
+end;
+
+	EEG = pop_loadset('filename',filename);
+
+% epoch around semtactic violation trials
+EEG = pop_epoch( EEG, sem2, [-1.5 2.5], 'epochinfo', 'yes');
+
+% remove artifact ICs
+% comment out if you do not have IC clusters for eye artefacts
+EEG = pop_subcomp(EEG,[1 3]);
+
+% loop to collect data
+
+% initiate sub loop for target electrodes(excluding eye and mastoid electrodes)
+% you could also plot all 33 electrodes if you like looking at eye electrodes and mastoids
+for elec = 1:length(EEG.chanlocs) 				% depends on final chan config
+	outdata = squeeze(EEG.data(elec,:,:));
+	semerp2(elec,:,S) = mean(outdata,2);
+
+end;
+
+	EEG = pop_loadset('filename',filename);
+
+% epoch around semtactic violation trials
+EEG = pop_epoch( EEG, sem3, [-1.5 2.5], 'epochinfo', 'yes');
+
+% remove artifact ICs
+% comment out if you do not have IC clusters for eye artefacts
+EEG = pop_subcomp(EEG,[1 3]);
+
+% loop to collect data
+
+% initiate sub loop for target electrodes(excluding eye and mastoid electrodes)
+% you could also plot all 33 electrodes if you like looking at eye electrodes and mastoids
+for elec = 1:length(EEG.chanlocs) 				% depends on final chan config
+	outdata = squeeze(EEG.data(elec,:,:));
+	semerp3(elec,:,S) = mean(outdata,2);
+
+end;
+
+
+
+
+% collect control trials
+	EEG = pop_loadset('filename',filename);
+EEG = pop_epoch( EEG, control1, [-1.5 2.5], 'epochinfo', 'yes');
+EEG = pop_subcomp(EEG,[1 3]);
+for elec = 1:length(EEG.chanlocs)
+	outdata1 = squeeze(EEG.data(elec,:,:));allerp1(elec,:,S) = mean(outdata,2);
+end;
+	EEG = pop_loadset('filename',filename);
+EEG = pop_epoch( EEG, control2, [-1.5 2.5], 'epochinfo', 'yes');
+EEG = pop_subcomp(EEG,[1 3]);
+for elec = 1:length(EEG.chanlocs)
+	outdata2 = squeeze(EEG.data(elec,:,:));allerp2(elec,:,S) = mean(outdata,2);
+end;
+	EEG = pop_loadset('filename',filename);
+EEG = pop_epoch( EEG, control3, [-1.5 2.5], 'epochinfo', 'yes');
+EEG = pop_subcomp(EEG,[1 3]);
+for elec = 1:length(EEG.chanlocs)
+	outdata3 = squeeze(EEG.data(elec,:,:));allerp3(elec,:,S) = mean(outdata,2);
+end;
+
+
+%end;
+
+
+% calculate ERPs by averaging across subjects
+% difference syntax minus control
+synpos1 = synerp1-allerp1;
+synpos2 = synerp2-allerp2;
+synpos3 = synerp3-allerp3;
+sempos1 = semerp1-allerp1;
+sempos2 = semerp2-allerp2;
+sempos3 = semerp3-allerp3;
+
+syndata = mean(((synpos1+synpos2+synpos3)/3),3);
+
+syndata = mean(allerp,3)-mean(allerp2,3);
+% difference semantic minus control
+semdata = mean(allerp3,3)-mean(allerp2,3);
+
+% plot difference ERP butterfly plots for electrodes 1:26, for the whole epoch (-1.5 to 2.5 s), and show scalp map at 450 and 900 ms
+
+% syntax
+figure;timtopo( syndata, EEG.chanlocs(1:9), [-1500 2500],[450 750 ], '', 0, 0, 'chaninfo', EEG.chaninfo,'style','map','title','Butterfly ERP Syntactic Violation minus Control','shading','interp');
+
+% semantics
+figure;timtopo( semdata, EEG.chanlocs(1:26), [-1500 2500 -5 5],[450 900], '', 0, 0, 'chaninfo', EEG.chaninfo,'style','map','title','Butterfly ERP Semantic Violation minus Control','shading','interp')
+
+
+% use this if you want to look at the scalp distribution for a time window mean. I forgot where I found this, probably on the EEGLAB list, but it's not mine
+%ChildH=get(gcf,'Children');
+%axes(ChildH(3));
+%topoplot(mean(data(:,[400:500]),2),EEG.chanlocs(1:26));
+

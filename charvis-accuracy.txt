@@ -1,0 +1,40 @@
+subjects = {'01' '02' '03' '04' '05' '06' '07' '08' '09' '10' '11' '12' '13' '14' '15' '16' '17' '18' '19'  '20' };
+
+Syntrialstotal=[]; Semtrialstotal=[];Syntrialscorr=[];Semtrialscorr=[];
+syn = {'S211'  'S213' 'S221' 'S223'  'S231'};
+sem = {  'S212' 'S214'  'S222' 'S224'   'S232' };
+
+
+for subject = 1:length(subjects)
+
+	subj = subjects{subject};
+
+
+	sourcefile = ['~/Desktop/charvis/raw/ch',subj,'.vhdr']
+
+STUDY = []; CURRENTSTUDY = 0; ALLEEG = []; EEG=[]; CURRENTSET=[];
+
+EEG = pop_fileio(sourcefile);
+EEG = pop_epoch( EEG, syn, [-0.1 3.1], 'epochinfo', 'yes');
+Syntrialstotal = [EEG.trials,Syntrialstotal];
+EEG = pop_epoch( EEG, corr, [-0.05 0.05], 'epochinfo', 'yes');
+Syntrialscorr = [EEG.trials,Syntrialscorr];
+
+EEG = pop_fileio(sourcefile);
+EEG = pop_epoch( EEG, sem, [-1.5 2.5], 'epochinfo', 'yes');
+Semtrialstotal = [EEG.trials,Semtrialstotal];
+EEG = pop_epoch( EEG, corr, [-0.05 0.05], 'epochinfo', 'yes');
+Semtrialscorr = [EEG.trials,Semtrialscorr];
+
+end;
+
+
+Semerrors = Semtrialstotal-Semtrialscorr;
+Synerrors = Syntrialstotal-Syntrialscorr;
+Synpercent = Synerrors./Syntrialstotal;
+Sempercent = Semerrors./Semtrialstotal;
+
+mean(Synpercent)
+std(Synpercent)
+mean(Sempercent)
+std(Sempercent)

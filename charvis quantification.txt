@@ -1,0 +1,226 @@
+% Charvis quantification
+
+% Script for calculating correlations between single-trial RT and component peak latency
+% This script collects single-trial difference waves for all conditions, calculates the component peak in the running averages, and plots and calculates the respective alignment of components to either RT or onset
+% This script is derived from the ERPimage script
+% You will probably need to modify all file locations
+
+ALLEEG=[];EEG=[];data=[];syndat=[];synvar=[];semdat=[];semvar=[];
+
+% triggers
+syn1 = {'S211'  'S213'}
+syn2 = {'S221' 'S223'}
+syn3 = { 'S231'  }
+sem1 = {  'S212' 'S214'}
+sem2 = { 'S222' 'S224' }
+sem3 = {  'S232' }
+control1={'S210' }
+control2={ 'S220'}
+control3={ 'S230'}
+
+% select channel
+chan = 'Pz';
+for Z = 1:length(EEG.chanlocs);if strcmp(EEG.chanlocs(Z).labels,chan) == 1;channel = Z;end;end;
+
+% main data collection loop
+
+for S = 1:20
+
+        filename = ['/home/jona/charvis/',num2str((S),'%02i'),'_charvis.set'];
+
+% collect control trials for all 3 positions
+
+EEG = pop_loadset('filename',filename);
+EEG = pop_epoch( EEG, control1, [0 1.5], 'epochinfo', 'yes');
+dat = squeeze(eeg_getdatact(EEG,'channel',channel,'rmcomps',[EEG.clusters.saccade EEG.clusters.blink]));
+controlerp1=mean(dat,2);
+
+EEG = pop_loadset('filename',filename);
+EEG = pop_epoch( EEG, control2, [0 1.5], 'epochinfo', 'yes');
+dat = squeeze(eeg_getdatact(EEG,'channel',channel,'rmcomps',[EEG.clusters.saccade EEG.clusters.blink]));
+controlerp2=mean(dat,2);
+
+EEG = pop_loadset('filename',filename);
+EEG = pop_epoch( EEG, control3, [0 1.5], 'epochinfo', 'yes');
+dat = squeeze(eeg_getdatact(EEG,'channel',channel,'rmcomps',[EEG.clusters.saccade EEG.clusters.blink]));
+controlerp3=mean(dat,2);
+
+
+% collect morphsyn trials for all 3 positions, and subtract equivalent control mean
+
+EEG = pop_loadset('filename',filename);
+EEG = pop_epoch( EEG, syn1, [0 1.5], 'epochinfo', 'yes');
+dat = squeeze(eeg_getdatact(EEG,'channel',channel,'rmcomps',[EEG.clusters.saccade EEG.clusters.blink]));
+var = eeg_getepochevent( EEG,{'S196'},[],'latency');
+
+
+for ii=1:length(dat(1,:))
+ dat(:,ii)=dat(:,ii)-controlerp1;
+end
+
+allvar1 = [var,allvar1];
+alldat1=[dat,alldat1];
+
+EEG = pop_loadset('filename',filename);
+EEG = pop_epoch( EEG, syn2, [0 1.5], 'epochinfo', 'yes');
+dat = squeeze(eeg_getdatact(EEG,'channel',channel,'rmcomps',[EEG.clusters.saccade EEG.clusters.blink]));
+var = eeg_getepochevent( EEG,{'S196'},[],'latency');
+
+
+for ii=1:length(dat(1,:))
+ dat(:,ii)=dat(:,ii)-controlerp2;
+end
+
+allvar1 = [var,allvar1];
+alldat1=[dat,alldat1];
+
+EEG = pop_loadset('filename',filename);
+EEG = pop_epoch( EEG, syn3, [0 1.5], 'epochinfo', 'yes');
+dat = squeeze(eeg_getdatact(EEG,'channel',channel,'rmcomps',[EEG.clusters.saccade EEG.clusters.blink]));
+var = eeg_getepochevent( EEG,{'S196'},[],'latency');
+
+
+for ii=1:length(dat(1,:))
+ dat(:,ii)=dat(:,ii)-controlerp3;
+end
+
+synvar = [var,synvar];
+syndat=[dat,syndat];
+
+
+
+% collect sem trials for all 3 positions, and subtract equivalent control mean
+
+EEG = pop_loadset('filename',filename);
+EEG = pop_epoch( EEG, sem1, [0 1.5], 'epochinfo', 'yes');
+dat = squeeze(eeg_getdatact(EEG,'channel',channel,'rmcomps',[EEG.clusters.saccade EEG.clusters.blink]));
+var = eeg_getepochevent( EEG,{'S196'},[],'latency');
+
+
+for ii=1:length(dat(1,:))
+ dat(:,ii)=dat(:,ii)-controlerp1;
+end
+
+allvar1 = [var,allvar1];
+alldat1=[dat,alldat1];
+
+EEG = pop_loadset('filename',filename);
+EEG = pop_epoch( EEG, sem2, [0 1.5], 'epochinfo', 'yes');
+dat = squeeze(eeg_getdatact(EEG,'channel',channel,'rmcomps',[EEG.clusters.saccade EEG.clusters.blink]));
+var = eeg_getepochevent( EEG,{'S196'},[],'latency');
+
+
+for ii=1:length(dat(1,:))
+ dat(:,ii)=dat(:,ii)-controlerp2;
+end
+
+allvar1 = [var,allvar1];
+alldat1=[dat,alldat1];
+
+EEG = pop_loadset('filename',filename);
+EEG = pop_epoch( EEG, sem3, [0 1.5], 'epochinfo', 'yes');
+dat = squeeze(eeg_getdatact(EEG,'channel',channel,'rmcomps',[EEG.clusters.saccade EEG.clusters.blink]));
+var = eeg_getepochevent( EEG,{'S196'},[],'latency');
+
+
+for ii=1:length(dat(1,:))
+ dat(:,ii)=dat(:,ii)-controlerp3;
+end
+
+semvar = [var,semvar];
+semdat=[dat,semdat];
+
+
+
+% collect RT.sorted sun and sen EEG and RT data into outdata5/outvar5 (syn) and outdata6/outvar6 (sem)
+% note the 10 hz filter and lack of smoothing
+[outdata5,outvar5,outtrials5] = erpimage(syndat, synvar, linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), '', 1, 1 ,'filt',[0 10],'NoShow','on');
+[outdata6,outvar6,outtrials6] = erpimage(semdat, semvar, linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), '', 1, 1 ,'filt',[0 10],'NoShow','on');
+
+C = syndat;
+D = semdat;
+
+
+% create empty values after max window length so the algorithm doesn't crash at boundaries
+C(150:200,:) = 0;
+
+% script from hell
+% some of the hardcoded numbers (e.g. the "25" and one of the "10"s) only make sense if using the same sampling rate
+% the hardcoded 30 determines the width of the moving-average window
+% this calculates the peaks for syn difference trials (matrix C)
+
+% create container variables 
+peaks=[];rt=[];
+
+% initiate loop; runs for length(outvar5), or n of syn trials
+for X = 1:(length(outvar5)-30)
+
+%sets data as a temporary variable;
+% contains, for the current trial, the mean of this trial and the following 20 trials in the range from  from 100 ms to 100 ms post RT
+data = mean(C(10:(outvar5(X)/4)+10,X:X+30),2);
+
+% 30-trial mean RT
+lat = mean(outvar5(:,X:X+30),2);
+
+% sort the data and collect the value at the end of the list to find the most positive value
+[Y,I]=sort(data);
+
+% store peak latency in matrix peak and RT in matrix rt
+peaks=[peaks,I(end)+10];
+rt = [rt,lat];
+
+% terminate loop
+end;
+
+% correct peak latency for sampling rate of 100 hz (RT is in seconds, peaks in sampling points)
+peaks = peaks*10;
+
+
+% repeat for semantic violation trials with slightly changed parameters: checks top of sort for most negative result; stores N4 peak latency and equivalent RT in rtN4 and peaksN4
+
+D(376:1000,:) = 0;peaksN4=[];rtN4=[];
+for X = 1:(length(outvar6)-30)
+data = mean(D(10:(outvar6(X)/4)+10,X:X+30),2);lat = mean(outvar6(:,X:X+30),2);[Y,I]=sort(data);peaksN4=[peaksN4,I(1)+10];rtN4 = [rtN4,lat];
+end;
+peaksN4 = peaksN4*4;
+
+
+% uncomment this to plot P6 peak by RT, and N4 peak by RT
+%figure;plot(rt,peaks,'o')
+%figure;plot(rtN4,peaksN4,'o')
+
+% calculate and plot skipped correlation (requires Robust Correlation toolbox by Rousselet & Pernet!)
+% note that for plot in submitted version, scales of the two plots where adjusted manually to be identical (1.5s by 1.5s)!
+skipped_correlation(rtN4,peaksN4);
+skipped_correlation(rt,peaks);
+
+% uncomment to compute Pearson's instead if toolbox is not installed
+%Pearson(rtN4,peaksN4);
+%Pearson(rt,peaks);
+
+% plot Positive (red) peaks after morphosyntactic and negative (blue) peaks after semantic deviations, difference 30-trial RT-sorted bin average
+figure;plot(rt,peaks,'o','MarkerFaceColor','r','MarkerEdgeColor','r')
+xlabel('RT in ms');ylabel('peak latency in ms');title({'Positive (red) peaks after morphosyntactic and negative (blue) peaks after semantic deviations; ' 'difference 30-trial RT-sorted bin average'});
+hold all;
+plot(rtN4,peaksN4,'o','MarkerFaceColor','b','MarkerEdgeColor','b')
+
+% Now, test if P6diff < N4diff
+% This compares the variance in the RT-to-peak difference for negative peaks after semantic and positive peaks after syntactic violations, using Levene's test
+
+% difference (temporal distance) between peak and RT
+p6diff = rt-peaks;
+n4diff = rtN4-peaksN4;
+
+% calculate Levene's test
+[p,stats]=vartestn([peaks.'; p6diff.'], [ones(length(peaks),1); ones(length(p6diff),1)*2],'on','robust');
+[pn4,statsn4]=vartestn([peaksN4.'; n4diff.'], [ones(length(peaksN4),1); ones(length(n4diff),1)*2],'on','robust');
+
+% uncomment to calculate vartest2 ... less robust, but equivalent
+% [H,P,CI,stats]=vartest2(peaksN4,n4diff)
+% [H,P,CI,stats]=vartest2(peaks,p6diff)       
+
+% uncomment to plots stats for peaks and RT; very informative
+%signalstat(peaks,1,'Morphosyntactic violation P6 latency',100);
+%signalstat(peaksN4,1,'Semantic violation N4 latency',100);
+%signalstat(rt,1,'Morphosyntactic violation RT',100);
+%signalstat(rtN4,1,'Semantic violation RT',100);
