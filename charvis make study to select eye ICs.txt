@@ -1,6 +1,6 @@
 % "charvis"
 
-% Script for generating RT-sorted ERPimages for Experiment charvis
+% Script for building an eeglab study for Experiment charvis and identifying eye ICs
 % This script collects individual, pre-processed subject data into an EEGLAB .study structure so you can automatically identify eye ICs using the EEGLAB plugin CORRMAP; it builds heavily on Viola's original CORRMAP scripts. CORRMAP identifies the best fit for a user-selected template across the whole study. Here, I feed CORRMAP an eye blink template and let it automatically select the blink ICs for all other subjects, so I can remove them later on.
 % You will probably need to modify all file locations
 
@@ -38,7 +38,7 @@ STUDY = std_selectdesign(STUDY, ALLEEG, 1);
 [STUDY ALLEEG] = std_preclust(STUDY, ALLEEG, 1,{'spec' 'npca' 10 'norm' 1 'weight' 1 'freqrange' [3 25] },{'scalpGrad' 'npca' 30 'norm' 1 'weight' 10 'abso' 0});
 
 
-% use corrmap to find blink component; the value (IC 1 of subject 17) is hardcoded and MUST be changed, unless you use exactly my ICA decomposition! 17/1 was chosen as eye blink template based on visual inspection of time series and scalp map
+% use corrmap to find blink component; the value (IC 1 of subject 17) is hard-coded (1, 17 was the blink template in the experiment I adapted this script from)
 [STUDY ALLEEG] = pop_loadstudy('filename', 'charvis.study', 'filepath', '/~/Desktop/charvis/');
   [CORRMAP,STUDY,ALLEEG]=corrmap(STUDY,ALLEEG,17,1,'th','auto','ics',3,'title','clname','saccade','badcomps,'yes');
 
