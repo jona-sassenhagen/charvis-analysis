@@ -1,0 +1,159 @@
+ALLEEG=[];EEG=[];alldat=[];allrtvar=[];rts=[];dats=[];
+
+
+
+viol1 = {'S211'  'S213' }
+viol2 = {'S221'  'S223' }
+viol3 = { 'S231'  }
+
+
+control1={'S210' }
+control2={ 'S220'}
+control3={ 'S230'}
+
+viol1 = {'S212'  'S214' }
+viol2 = {'S222'  'S224' }
+viol3 = { 'S232'  }
+
+
+
+control={'S210' 'S220' 'S230'}
+viol1 = {'S211'  'S212'  'S213' 'S214'}
+viol2 = {'S221' 'S223' 'S222' 'S224' }
+viol3 = { 'S231' 'S232' }
+
+channel = 13
+
+for S = 1:3
+
+
+
+%		filename = ['charvis',num2str((S),'%02i'),'.set'];
+		filename = ['charvis',num2str(S),'.set'];
+        filepath = '/home/jona/Desktop/jonafiles/'	
+        
+
+EEG = pop_loadset('filename',filename,'filepath',filepath);
+EEG = pop_resample( EEG, 100);
+	EEG = pop_subcomp(EEG,find(EEG.reject.gcompreject));
+EEG.icasphere = []; EEG.icaweights = []; EEG.icawinv = [];
+EEG = pop_reref( EEG, [16 17] );
+
+EEG = pop_epoch( EEG, control1, [-1 3], 'epochinfo', 'yes');
+dat = squeeze(eeg_getdatact(EEG,'channel',channel));
+controlerp1=mean(dat,2);
+
+
+
+EEG = pop_loadset('filename',filename,'filepath',filepath);
+EEG = pop_resample( EEG, 100);
+	EEG = pop_subcomp(EEG,find(EEG.reject.gcompreject));
+EEG.icasphere = []; EEG.icaweights = []; EEG.icawinv = [];
+EEG = pop_reref( EEG, [16 17] );
+
+EEG = pop_epoch( EEG, control2, [-1 3], 'epochinfo', 'yes');
+dat = squeeze(eeg_getdatact(EEG,'channel',channel));
+controlerp2=mean(dat,2);
+
+
+
+EEG = pop_loadset('filename',filename,'filepath',filepath);
+EEG = pop_resample( EEG, 100);
+	EEG = pop_subcomp(EEG,find(EEG.reject.gcompreject));
+EEG.icasphere = []; EEG.icaweights = []; EEG.icawinv = [];
+EEG = pop_reref( EEG, [16 17] );
+
+EEG = pop_epoch( EEG, control3, [-1 3], 'epochinfo', 'yes');
+dat = squeeze(eeg_getdatact(EEG,'channel',channel));
+controlerp3=mean(dat,2);
+
+
+EEG = pop_loadset('filename',filename,'filepath',filepath);
+EEG = pop_resample( EEG, 100);
+	EEG = pop_subcomp(EEG,find(EEG.reject.gcompreject));
+EEG.icasphere = []; EEG.icaweights = []; EEG.icawinv = [];
+EEG = pop_reref( EEG, [16 17] );
+
+EEG = pop_epoch( EEG, viol1, [-1 3], 'epochinfo', 'yes');
+dat = squeeze(eeg_getdatact(EEG,'channel',channel));
+rtvar = eeg_getepochevent( EEG,{'S196'},[],'latency');
+
+
+for ii=1:length(dat(1,:))
+ dat(:,ii)=dat(:,ii)-controlerp1;
+end
+
+allrtvar = [rtvar,allrtvar];
+alldat=[dat,alldat];
+
+EEG = pop_loadset('filename',filename,'filepath',filepath);
+EEG = pop_resample( EEG, 100);
+	EEG = pop_subcomp(EEG,find(EEG.reject.gcompreject));
+EEG.icasphere = []; EEG.icaweights = []; EEG.icawinv = [];
+EEG = pop_reref( EEG, [16 17] );
+
+
+EEG = pop_epoch( EEG, viol2, [-1 3], 'epochinfo', 'yes');
+dat = squeeze(eeg_getdatact(EEG,'channel',channel));
+rtvar = eeg_getepochevent( EEG,{'S196'},[],'latency');
+
+
+for ii=1:length(dat(1,:))
+ dat(:,ii)=dat(:,ii)-controlerp2;
+end
+
+allrtvar = [rtvar,allrtvar];
+alldat=[dat,alldat];
+
+EEG = pop_loadset('filename',filename,'filepath',filepath);
+EEG = pop_resample( EEG, 100);
+	EEG = pop_subcomp(EEG,find(EEG.reject.gcompreject));
+EEG.icasphere = []; EEG.icaweights = []; EEG.icawinv = [];
+EEG = pop_reref( EEG, [16 17] );
+
+EEG = pop_epoch( EEG, viol3, [-1 3], 'epochinfo', 'yes');
+dat = squeeze(eeg_getdatact(EEG,'channel',channel));
+rtvar = eeg_getepochevent( EEG,{'S196'},[],'latency');
+
+
+for ii=1:length(dat(1,:))
+ dat(:,ii)=dat(:,ii)-controlerp3;
+end
+
+allrtvar = [rtvar,allrtvar];
+alldat=[dat,alldat];
+
+rts{S} = allrtvar;
+datas{S} = alldat;
+allrtvar=[];alldat=[];
+end;
+
+eegdata=[];rtdata=[];
+for x = 1:3
+eegdata=[eegdata,datas{x}];
+rtdata=[rtdata,rts{x}];
+end;
+
+figure;[outdata6,outrtvar5,outtrials5] = erpimage(eegdata, rtdata, linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), 'PZ ERP sorted by reaction time', 6, 1 ,'erp',1,'avg_type','Gaussian','cbar','on','cbar_title','\muV');
+
+%backuprtvar = allrtvar;
+%backupc = alldat;
+
+
+
+figure;[outdata6,outrtvar5,outtrials5] = erpimage(eegdata, rtdata, linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), 'PZ ERP sorted by reaction time', 6, 1 ,'erp',1,'avg_type','Gaussian','cbar','on','cbar_title','\muV','align',inf);
+
+
+
+
+
+
+
+dat = mean(outdata5,2);
+tempaccdat = mean(outdata6,2);
+[Y,I] = max(dat);
+[Y,I2] = max(tempaccdat);
+
+pzmax = I
+dccmax = I2
+

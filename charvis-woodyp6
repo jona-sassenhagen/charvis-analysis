@@ -1,0 +1,149 @@
+pre = 100;		% time points before 0
+p6onset = 50;	% time points from 0 to P6 template onset
+p6length = 100;		% template length in data points
+
+wrts = rts; weeg = datas;
+
+for S = 1:3
+
+rtmean = nanmedian(wrts{S});
+
+
+for X = 1:length(wrts{S})
+if 1250 < wrts{S}(X)
+wrts{S}(X) = NaN;
+end;end;
+
+for X = 1:length(wrts{S})
+if 500 > wrts{S}(X)
+wrts{S}(X) = NaN;
+end;end;
+
+data = weeg{S};rtvar = wrts{S};
+
+[outdata,outvar] = erpimage(data,rtvar, linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), '', 1, 1, 'filt',[0 6],'NoShow','on');
+
+dasyn{S} = outdata;
+vasyn{S} = outvar;
+
+end;
+
+
+eegdata=[];rtdata=[];
+for x = 1:3
+eegdata=[eegdata,dasyn{x}];
+rtdata=[rtdata,vasyn{x}];
+end;
+
+%figure;[outdata5,outrtvar5,outtrials5] = erpimage(eegdata, rtdata, linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), 'PZ ERP sorted by reaction time', 6, 1 ,'erp',1,'avg_type','Gaussian','cbar','on','cbar_title','\muV');
+
+
+collects=[];means=[];vars=[]; corrvals=[];
+for S = 1:3;
+
+collect=[];corvall=[];
+data = dasyn{S};
+for L = 1:length(vasyn{S})
+data((vasyn{S}(L)/10)+pre+25:600,L) = 0;end;
+
+datamean = mean(data(pre+p6onset:pre+p6onset+p6length,:),2);
+
+for N = 1:100
+trials=[];
+for X = 1:length(vasyn{S})
+
+out = xcorr(data(pre+p6onset:pre+p6onset+p6length,X),datamean);
+
+[Y,I]=sort(out);
+
+thepoint=I(end)-p6length;
+
+trialpoint = data(pre+p6onset+thepoint:pre+p6onset+p6length+thepoint,X); 
+trials = [trials,trialpoint];
+
+datamean = mean(trials,2);
+
+end;
+end;
+
+for X = 1:length(vasyn{S})
+
+
+out = xcorr(data(pre+p6onset:pre+p6onset+p6length,X),mean(trials,2));
+
+[Y,I]=sort(out);
+
+thepoint=I(end)-p6length;
+
+%corrval = [corrval,thepoint];
+collect = [collect,thepoint];
+
+end;
+
+%corrvals = [corrvals,corrval];
+means = [means,mean(trials,2)];
+vars = [vars,collect];
+collects{S} = collect;
+
+end;
+
+
+vars=[];lats=[];dats=[];
+for S = 1:3
+
+dat =dasyn{S};
+varf = vasyn{S};
+lat = collects{S};
+rtmean = nanmedian(vasyn{S});
+
+dats=[dats,dat];
+vars=[vars,varf];
+
+lats=[lats,lat];
+
+end;
+
+for S = 1:3
+%figure;erpimage(dasyn{S},(collects{S}+p6onset)*10,linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), 'lats', 3, 1, 'auxvar',vasyn{S},'erp',3);
+%figure;erpimage(dasyn{S},vasyn{S},linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), 'lats', 3, 1, 'auxvar',(collects{S}+p6onset)*10,'erp',3);
+skipped_correlation(vasyn{S},(collects{S}+p6onset)*10,0)
+
+end;
+
+
+figure;erpimage(dats,(lats+p6onset)*10,linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), 'lats', 30, 1, 'auxvar',vars,'erp',3);
+
+figure;erpimage(dats,vars,linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), 'lats', 30, 1, 'auxvar',(lats+p6onset)*10,'erp',3);
+
+skipped_correlation(vars,(lats+50)*10,0)
+
+%[p,stats]=vartestn([(lats*10).'; (lats*10).'-vars.'], [ones(length(vars),1); ones(length(vars),1)*2],'on','robust');
+
+%skipped_correlation(vars,(lats+50)*10,1)
+
+
+%robust_correlation(vars,lats)
+
+%[r,t,p,hboot,CI]=Pearson(vars,lats);
+
+%figure;skipped_correlation(vars,lats)
+
+%[r,t,p,outid,hboot,CI]=skipped_correlation(vars,lats,0)
+
+%[r,t,p,hboot,CI]=Pearson(vars,lats,0)
+
+
+
+x = vars;
+y = (lats+p6onset)*10;
+
+
+mdl = LinearModel.fit(x,y); % not robust
+mdlr = LinearModel.fit(x,y,'RobustOpts','on');
+
+subplot(1,2,1);plotResiduals(mdl,'probability')
+subplot(1,2,2);plotResiduals(mdlr,'probability')
+
+
+mdlr = LinearModel.fit(x,y,'linear','RobustOpts','on');
+plotResiduals(mdlr,'probability')

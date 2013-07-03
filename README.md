@@ -16,9 +16,16 @@
 # can be applied to will be uploaded to and hosted by Elsevier at an 
 # as of yet undisclosed location.
 
-# My coworker Phillip Alday has proposed how a version control system
-# tracking experimental analysis scripts can further improve scientific 
-# standards here: http://bit.ly/106JtXJ
+# You can find these files here because my coworker Phillip Alday has 
+# proposed how a version control system tracking experimental analysis 
+# scripts can further improve scientific standards. You can find a 
+# discussion of the idea here: http://bit.ly/106JtXJ
+
+# This repo contains a number of files. Generally, you first have to preprocess
+# files using charvis-prep. Then, you can use either of the other files to 
+# generate one of the measures, like ERPimages or ERPimage-derived statistics,
+# or even regular ERPs if you feel so inclined.
+# None of the scripts are assumed to be especially optimised.
 
 # These scripts are released under the BSD license:
 # Redistribution and use in source and binary forms, with or without
