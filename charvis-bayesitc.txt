@@ -3,6 +3,7 @@ ALLEEG=[];EEG=[];alldat=[];allrtvar=[];rts=[];dats=[];clear tics;clear itcs;clea
 
 
 
+% control words by position
 
 control1={'S210' }
 control2={ 'S220'}
@@ -10,7 +11,7 @@ control3={ 'S230'}
 
 
 
-
+% change depending on conditions you want to analyse (syn, sem, all)
 
 control={'S210' 'S220' 'S230'}
 viol1 = {'S211'  'S212'  'S213' 'S214'}
@@ -26,8 +27,12 @@ viol2 = {'S221'  'S223' }
 viol3 = { 'S231'  }
 
 
+% set channel Pz
 
 channel = 3
+
+
+% loop through subjs
 
 for S = 1:3
 
@@ -148,6 +153,8 @@ for X = 1:3
 [outdata6,outrtvar6,outtrials6] = erpimage(datas{X}, rts{X}, linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), '', 1, 1 ,'erp',1,'cbar','on','cbar_title','\muV','NoShow','on','align',inf);
 
 X
+
+% actually, this needs to be adapted still because we're running a two-sample t test, not a one-sample t test
 [ersp,itc,powbase,times,freqs,erspboot,itcboot,itcphase]  = newtimef( {outdata6 outdata5}  ,EEG.pnts,[EEG.xmin EEG.xmax]*1000,EEG.srate,[2 0.5], 'freqs', [0.5 8], 'plotphase', 'off', 'plotersp','off', 'plotitc','off','trialbase','full','timesout',1000,'nfreqs',30,'verbose','on','freqscale', 'linear','verbose','off'); 
 
 itcs{X} = itc{3};
@@ -198,6 +205,8 @@ out(X) = mean(mean(tics(:,I-5-toffset/10:I+5-toffset/10,X),1),2);
 out2(X) = mean(mean(tics(3:6,I-5-toffset/10:I+5-toffset/10,X),1),2);
 
 end;
+
+% out2 is a subset of frequencies
 
 [BF01, probH0] = bayesTtestOneSample(out)
 [BF01, probH0] = bayesTtestOneSample(out2)
