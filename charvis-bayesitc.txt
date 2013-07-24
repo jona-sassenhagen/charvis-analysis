@@ -34,9 +34,13 @@ channel = 3
 
 % loop through subjs
 
-for S = 1:3
+N = 3
+
+for S = 1:N
 
 
+
+% loads data per condition
 
 %		filename = ['charvis',num2str((S),'%02i'),'.set'];
 		filename = ['charvis',num2str(S),'.set'];
@@ -138,77 +142,65 @@ eegdata=[eegdata,datas{x}];
 rtdata=[rtdata,rts{x}];
 end;
 
-figure;[outdata5,outrtvar5,outtrials5,limits,axhndls,erp,amps,cohers,cohsig,ampsig,outamps,phsangls,phsamp,sortidx,erpsig]  = erpimage(eegdata, rtdata, linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), 'PZ ERP sorted by reaction time', 6, 1 ,'erp',1,'avg_type','Gaussian','cbar','on','cbar_title','\muV','vert',[690]);
+% simple ERPimage (only for basic validation)
 
-%backuprtvar = allrtvar;
-%backupc = alldat;
-
+figure;[outdata5,outrtvar5,outtrials5,limits,axhndls,erp,amps,cohers,cohsig,ampsig,outamps,phsangls,phsamp,sortidx,erpsig]  = erpimage(eegdata, rtdata, linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), 'PZ ERP sorted by reaction time', 6, 1 ,'erp',1,'avg_type','Gaussian','cbar','on','cbar_title','\muV','vert',[700]);
 
 
 
-for X = 1:3
+% main TF script
 
-[outdata5,outrtvar5,outtrials5] = erpimage(datas{X}, rts{X}, linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), '', 1, 1 ,'erp',1,'cbar','on','cbar_title','\muV','NoShow','on');
+for X = 1:N
 
-[outdata6,outrtvar6,outtrials6] = erpimage(datas{X}, rts{X}, linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), '', 1, 1 ,'erp',1,'cbar','on','cbar_title','\muV','NoShow','on','align',inf);
+[outdata5,outrtvar5,outtrials5,limits,axhndls,erp,amps,cohers,cohsig,ampsig,outamps,phsangls,phsamp,sortidx,erpsig] = erpimage(datas{X}, rts{X}, linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), 'PZ ERP sorted by reaction time', 1, 1 ,'erp',1,'cbar','on','cbar_title','\muV','NoShow','on');
+
+[outdata6,outrtvar6,outtrials6] = erpimage(datas{X}, rts{X}, linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), 'PZ ERP sorted by reaction time', 1, 1 ,'erp',1,'cbar','on','cbar_title','\muV','NoShow','on','align',inf);
 
 X
-
-% actually, this needs to be adapted still because we're running a two-sample t test, not a one-sample t test
 [ersp,itc,powbase,times,freqs,erspboot,itcboot,itcphase]  = newtimef( {outdata6 outdata5}  ,EEG.pnts,[EEG.xmin EEG.xmax]*1000,EEG.srate,[2 0.5], 'freqs', [0.5 8], 'plotphase', 'off', 'plotersp','off', 'plotitc','off','trialbase','full','timesout',1000,'nfreqs',30,'verbose','on','freqscale', 'linear','verbose','off'); 
-
-itcs{X} = itc{3};
-ersps{X} = ersp{3};
-tics(:,:,X) = itcs{X};
-
-
+itcs1{X} = itc{1};itcs2{X} = itc{2};itcs{X} = itc{3};ersps{X} = ersp{3};tics(:,:,X) = itcs{X};tics1(:,:,X) = itcs1{X};tics2(:,:,X) = itcs2{X};
 X
+
 end;
 
 
+% find P6 peak in stim-locked data
 
-toffset = times(1)-EEG.times(1);
+[outdata,outrtvar,outtrials,limits,axhndls,erp,amps,cohers,cohsig,ampsig,outamps,phsangls,phsamp,sortidx,erpsig] = erpimage(alldat,allrtvar, linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), 'PZ ERP sorted by reaction time', 1, 1 ,'erp',1,'cbar','on','cbar_title','\muV','NoShow','on');
 
-[Y,I]=max(erp(1:525));
-ppeak = EEG.times(I)
+[Ys,maxp6]=max(erp((times(1)-EEG.times(1))/10:525));
+I = maxp6;
+S = 3;
+
+% also check RT for the heck of it, should be ~ I
+for X = 1:20
+rtallss(X) = nanmean(rts{X});
+end;
+mean(rtallss)
+I
 
 
+% calculate statistical significance of mean difference PLI
+
+for X = 1:N
+a(X) = mean(mean(tics(:,I-S:I+S,X),1),2);
+end;
+stats = mes(a.',0,{'md','hedgesg'},'nBoot',10000)
+[BF01, probH0] = bayesTtestOneSample(a)
+
+
+% plot ITCs both as 2d and 3d pics
+% (adjust sbplot based on subject #)
 
 figure; 
-for X = 1:3
+for X = 1:N
 sbplot(1,3,X)
-tftopo(itcs{X},times,freqs,'limits', [nan nan nan nan nan nan], 'smooth',2,'logfreq','off','vert',[ 0 ppeak],'title',num2str(X));
+tftopo(itcs{X},times,freqs,'limits', [nan nan nan nan nan nan], 'smooth',2,'logfreq','off','vert',[ 0 maxp6],'title',num2str(X));
 end;
 
-
-
 figure; 
-for X = 1:3
+for X = 1:N
 sbplot(1,3,X)
-%plotcurve(times,itcs{X}(3:6,:),'plotmean','on','vert',[times([265])]);
-%plotcurve(times,itcs{X}(4:6,:),'plotmean','on','vert',[ppeak]);
-plotcurve(times,itcs{X}(:,:),'plotmean','on','vert',[ppeak-5 ppeak+5]);
-
+plotcurve(times,itcs{X}(:,:),'plotmean','on','vert',[maxp6-S maxp6+S]);
 end;
-
-
-figure; 
-for X = 1:3
-tics(:,:,X) = itcs{X};
-end;
-
-figure;tftopo(tics,times,freqs,'limits', [nan nan nan nan nan nan], 'smooth',2,'logfreq','native','mode','ave','vert',[0 ppeak]);
-
-
-for X = 1:3
-out(X) = mean(mean(tics(:,I-5-toffset/10:I+5-toffset/10,X),1),2);
-out2(X) = mean(mean(tics(3:6,I-5-toffset/10:I+5-toffset/10,X),1),2);
-
-end;
-
-% out2 is a subset of frequencies
-
-[BF01, probH0] = bayesTtestOneSample(out)
-[BF01, probH0] = bayesTtestOneSample(out2)
-
 
