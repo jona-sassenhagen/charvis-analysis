@@ -14,9 +14,6 @@ control3={ 'S230'}
 % change depending on conditions you want to analyse (syn, sem, all)
 
 control={'S210' 'S220' 'S230'}
-viol1 = {'S211'  'S212'  'S213' 'S214'}
-viol2 = {'S221' 'S223' 'S222' 'S224' }
-viol3 = { 'S231' 'S232' }
 viol1 = {'S212'  'S214' }
 viol2 = {'S222'  'S224' }
 viol3 = { 'S232'  }
@@ -25,6 +22,10 @@ viol3 = { 'S232'  }
 viol1 = {'S211'  'S213' }
 viol2 = {'S221'  'S223' }
 viol3 = { 'S231'  }
+
+viol1 = {'S211'  'S212'  'S213' 'S214'}
+viol2 = {'S221' 'S223' 'S222' 'S224' }
+viol3 = { 'S231' 'S232' }
 
 
 % set channel Pz
@@ -38,7 +39,11 @@ N = 3
 
 for S = 1:N
 
-
+if S == 2;
+	channel = 3;
+else
+	channel = 3;
+end;
 
 % loads data per condition
 
@@ -157,8 +162,17 @@ for X = 1:N
 [outdata6,outrtvar6,outtrials6] = erpimage(datas{X}, rts{X}, linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), 'PZ ERP sorted by reaction time', 1, 1 ,'erp',1,'cbar','on','cbar_title','\muV','NoShow','on','align',inf);
 
 X
-[ersp,itc,powbase,times,freqs,erspboot,itcboot,itcphase]  = newtimef( {outdata6 outdata5}  ,EEG.pnts,[EEG.xmin EEG.xmax]*1000,EEG.srate,[2 0.5], 'freqs', [0.5 8], 'plotphase', 'off', 'plotersp','off', 'plotitc','off','trialbase','full','timesout',1000,'nfreqs',30,'verbose','on','freqscale', 'linear','verbose','off'); 
-itcs1{X} = itc{1};itcs2{X} = itc{2};itcs{X} = itc{3};ersps{X} = ersp{3};tics(:,:,X) = itcs{X};tics1(:,:,X) = itcs1{X};tics2(:,:,X) = itcs2{X};
+[ersp,itc,powbase,times,freqs,erspboot,itcboot,itcphase]  = newtimef( {outdata6 outdata5}  ,EEG.pnts,[EEG.xmin EEG.xmax]*1000,EEG.srate,[2 0.5], 'freqs', [0.5 8], 'plotphase', 'off', 'plotersp','off', 'plotitc','off','trialbase','full','timesout',1000,'nfreqs',30,'verbose','on','freqscale', 'linear','verbose','off','rmerp','off'); 
+itcs1{X} = itc{1};
+itcs2{X} = itc{2};
+itcs{X} = itc{3};
+ersps{X} = ersp{3};
+tics(:,:,X) = itcs{X};
+tics1(:,:,X) = itcs1{X};
+tics2(:,:,X) = itcs2{X};
+itcs3{X} = itc{3};
+tics3(:,:,X) = itcs3{X};
+
 X
 
 end;
@@ -166,14 +180,14 @@ end;
 
 % find P6 peak in stim-locked data
 
-[outdata,outrtvar,outtrials,limits,axhndls,erp,amps,cohers,cohsig,ampsig,outamps,phsangls,phsamp,sortidx,erpsig] = erpimage(alldat,allrtvar, linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), 'PZ ERP sorted by reaction time', 1, 1 ,'erp',1,'cbar','on','cbar_title','\muV','NoShow','on');
+[outdata,outrtvar,outtrials,limits,axhndls,erp,amps,cohers,cohsig,ampsig,outamps,phsangls,phsamp,sortidx,erpsig] = erpimage(eegdata,rtdata, linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), 'PZ ERP sorted by reaction time', 1, 1 ,'erp',1,'cbar','on','cbar_title','\muV','NoShow','on');
 
 [Ys,maxp6]=max(erp((times(1)-EEG.times(1))/10:525));
 I = maxp6;
 S = 3;
 
 % also check RT for the heck of it, should be ~ I
-for X = 1:20
+for X = 1:N
 rtallss(X) = nanmean(rts{X});
 end;
 mean(rtallss)
@@ -183,10 +197,21 @@ I
 % calculate statistical significance of mean difference PLI
 
 for X = 1:N
-a(X) = mean(mean(tics(:,I-S:I+S,X),1),2);
+a(X) = mean(mean(tics3(:,I-S:I+S,X),1),2);
 end;
+a
 stats = mes(a.',0,{'md','hedgesg'},'nBoot',10000)
 [BF01, probH0] = bayesTtestOneSample(a)
+
+
+
+
+for X = 1:N
+x(X) = mean(mean(tics1(:,I-S:I+S,X),1),2);
+y(X) = mean(mean(tics2(:,I-S:I+S,X),1),2);
+end;
+stats = mes(abs(x),abs(y),{'md','hedgesg'},'nBoot',10000)
+[BF01, probH0] = bayesTtestTwoSample(abs(x),abs(y))
 
 
 % plot ITCs both as 2d and 3d pics

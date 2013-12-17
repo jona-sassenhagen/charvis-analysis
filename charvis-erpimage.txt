@@ -1,6 +1,8 @@
 % empty containers
 ALLEEG=[];EEG=[];data=[];syndat=[];synvar=[];semdat=[];semvar=[];
 
+n = 1
+
 % triggers
 syn1 = {'S211'  'S213'}
 syn2 = {'S221' 'S223'}
@@ -13,28 +15,41 @@ control2={ 'S220'}
 control3={ 'S230'}
 
 % select channel
-chan = 'Pz';
-for Z = 1:length(EEG.chanlocs);if strcmp(EEG.chanlocs(Z).labels,chan) == 1;channel = Z;end;end;
+
 
 % main data collection loop
 
-for S = 1:20
+for S = 1:n
 
-        filename = ['/home/jona/charvis/',num2str((S),'%02i'),'_charvis.set'];
+    %    filename = ['/home/jona/charvis/',num2str((S),'%02i'),'_charvis.set'];
+
+filename = ['/home/jona/Desktop/charvis/NewFolder/charvis-',num2str((S),'%02i'),'-pre.set'];
+
+
 
 % collect control trials for all 3 positions
 
 EEG = pop_loadset('filename',filename);
+
+chan = 'Pz';
+for Z = 1:length(EEG.chanlocs);if strcmp(EEG.chanlocs(Z).labels,chan) == 1;channel = Z;end;end;
+
+
 EEG = pop_epoch( EEG, control1, [-1 3], 'epochinfo', 'yes');
 dat = squeeze(eeg_getdatact(EEG,'channel',channel,'rmcomps',[EEG.clusters.saccade EEG.clusters.blink]));
 controlerp1=mean(dat,2);
 
 EEG = pop_loadset('filename',filename);
+
+
 EEG = pop_epoch( EEG, control2, [-1 3], 'epochinfo', 'yes');
 dat = squeeze(eeg_getdatact(EEG,'channel',channel,'rmcomps',[EEG.clusters.saccade EEG.clusters.blink]));
 controlerp2=mean(dat,2);
 
 EEG = pop_loadset('filename',filename);
+
+
+
 EEG = pop_epoch( EEG, control3, [-1 3], 'epochinfo', 'yes');
 dat = squeeze(eeg_getdatact(EEG,'channel',channel,'rmcomps',[EEG.clusters.saccade EEG.clusters.blink]));
 controlerp3=mean(dat,2);
@@ -43,6 +58,9 @@ controlerp3=mean(dat,2);
 % collect morphsyn trials for all 3 positions, and subtract equivalent control mean
 
 EEG = pop_loadset('filename',filename);
+
+
+
 EEG = pop_epoch( EEG, syn1, [-1 3], 'epochinfo', 'yes');
 dat = squeeze(eeg_getdatact(EEG,'channel',channel,'rmcomps',[EEG.clusters.saccade EEG.clusters.blink]));
 var = eeg_getepochevent( EEG,{'S196'},[],'latency');
@@ -52,10 +70,13 @@ for ii=1:length(dat(1,:))
  dat(:,ii)=dat(:,ii)-controlerp1;
 end
 
-allvar1 = [var,allvar1];
-alldat1=[dat,alldat1];
+synvar = [var,synvar];
+syndat=[dat,syndat];
 
 EEG = pop_loadset('filename',filename);
+
+
+
 EEG = pop_epoch( EEG, syn2, [-1 3], 'epochinfo', 'yes');
 dat = squeeze(eeg_getdatact(EEG,'channel',channel,'rmcomps',[EEG.clusters.saccade EEG.clusters.blink]));
 var = eeg_getepochevent( EEG,{'S196'},[],'latency');
@@ -65,10 +86,13 @@ for ii=1:length(dat(1,:))
  dat(:,ii)=dat(:,ii)-controlerp2;
 end
 
-allvar1 = [var,allvar1];
-alldat1=[dat,alldat1];
+synvar = [var,synvar];
+syndat=[dat,syndat];
 
 EEG = pop_loadset('filename',filename);
+
+
+
 EEG = pop_epoch( EEG, syn3, [-1 3], 'epochinfo', 'yes');
 dat = squeeze(eeg_getdatact(EEG,'channel',channel,'rmcomps',[EEG.clusters.saccade EEG.clusters.blink]));
 var = eeg_getepochevent( EEG,{'S196'},[],'latency');
@@ -86,6 +110,9 @@ syndat=[dat,syndat];
 % collect sem trials for all 3 positions, and subtract equivalent control mean
 
 EEG = pop_loadset('filename',filename);
+
+
+
 EEG = pop_epoch( EEG, sem1, [-1 3], 'epochinfo', 'yes');
 dat = squeeze(eeg_getdatact(EEG,'channel',channel,'rmcomps',[EEG.clusters.saccade EEG.clusters.blink]));
 var = eeg_getepochevent( EEG,{'S196'},[],'latency');
@@ -95,10 +122,13 @@ for ii=1:length(dat(1,:))
  dat(:,ii)=dat(:,ii)-controlerp1;
 end
 
-allvar1 = [var,allvar1];
-alldat1=[dat,alldat1];
+semvar = [var,semvar];
+semdat=[dat,semdat];
 
 EEG = pop_loadset('filename',filename);
+
+
+
 EEG = pop_epoch( EEG, sem2, [-1 3], 'epochinfo', 'yes');
 dat = squeeze(eeg_getdatact(EEG,'channel',channel,'rmcomps',[EEG.clusters.saccade EEG.clusters.blink]));
 var = eeg_getepochevent( EEG,{'S196'},[],'latency');
@@ -108,10 +138,13 @@ for ii=1:length(dat(1,:))
  dat(:,ii)=dat(:,ii)-controlerp2;
 end
 
-allvar1 = [var,allvar1];
-alldat1=[dat,alldat1];
+semvar = [var,semvar];
+semdat=[dat,semdat];
 
 EEG = pop_loadset('filename',filename);
+
+
+
 EEG = pop_epoch( EEG, sem3, [-1 3], 'epochinfo', 'yes');
 dat = squeeze(eeg_getdatact(EEG,'channel',channel,'rmcomps',[EEG.clusters.saccade EEG.clusters.blink]));
 var = eeg_getepochevent( EEG,{'S196'},[],'latency');
@@ -125,22 +158,23 @@ semvar = [var,semvar];
 semdat=[dat,semdat];
 
 
+end
 
 
 % plot resulting diff single trials
 
 % first, covertly sort and apply gaussian smoothing for presentation locked and response locked syn trials
-[syntrials1,synlats1] = erpimage(syndat, synvar, linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), '', 30, 1 , 'avg_type','Gaussian','NoShow','on');
-[syntrials2,synlats2] = erpimage(syndat, synvar, linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), '', 30, 1 ,'avg_type','Gaussian','NoShow','on','align',inf);
+[syntrials1,synlats1] = erpimage(syndat, synvar, linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), '', 1, 1 , 'avg_type','Gaussian','NoShow','on','baseline',[-1000 0]);
+[syntrials2,synlats2] = erpimage(syndat, synvar, linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), '', 1, 1 ,'avg_type','Gaussian','NoShow','on','align',inf,'baseline',[-1000 0]);
 
 % now, plot both in one plot for syn
-figure; erpimage([syntrials1 syntrials2], [zeros(1,length(synlats1)) ones(1,length(synlats2))*mean(synlats2)], linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), '', 1, 1 , 'erp',2, 'cbar','on','nosort','on','auxvar',[synlats1 mean(synlats2)-synlats2], 'yerplabel','\muV','limits',[NaN NaN -3.5 7],'horz',[length(synlats1)],'cbar_title','\muV')
+figure; erpimage([syntrials1 syntrials2], [zeros(1,length(synlats1)) ones(1,length(synlats2))*mean(synlats2)], linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), '', 1, 1 , 'erp',2, 'cbar','on','nosort','on','auxvar',[synlats1 mean(synlats2)-synlats2], 'yerplabel','\muV','limits',[NaN NaN -5 15],'horz',[length(synlats1)],'cbar_title','\muV')
 
 
 % next, covertly sort and apply gaussian smoothing for presentation locked and response locked sem trials
-[semtrials1,semlats1] = erpimage(semdat, semvar, linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), '', 30, 1 , 'avg_type','Gaussian','NoShow','on');
-[semtrials2,semlats2] = erpimage(semdat, semvar, linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), '', 30, 1 ,'avg_type','Gaussian','NoShow','on','align',inf);
+[semtrials1,semlats1] = erpimage(semdat, semvar, linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), '', 1, 1 , 'avg_type','Gaussian','NoShow','on','baseline',[-1000 0]);
+[semtrials2,semlats2] = erpimage(semdat, semvar, linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), '', 1, 1 ,'avg_type','Gaussian','NoShow','on','align',inf,'baseline',[-1000 0]);
 
 % now, plot both in one plot for sem
-figure; erpimage([semtrials1 semtrials2], [zeros(1,length(semlats1)) ones(1,length(semlats2))*mean(semlats2)], linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), '', 1, 1 , 'erp',2, 'cbar','on','nosort','on','auxvar',[semlats1 mean(semlats2)-semlats2], 'yerplabel','\muV','limits',[NaN NaN -3.5 7],'horz',[length(semlats1)],'cbar_title','\muV')
+figure; erpimage([semtrials1 semtrials2], [zeros(1,length(semlats1)) ones(1,length(semlats2))*mean(semlats2)], linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), '', 1, 1 , 'erp',2, 'cbar','on','nosort','on','auxvar',[semlats1 mean(semlats2)-semlats2], 'yerplabel','\muV','limits',[NaN NaN -5 15],'horz',[length(semlats1)],'cbar_title','\muV')
 

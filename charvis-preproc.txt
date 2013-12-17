@@ -1,6 +1,8 @@
 % Preprocessing Charvis
 
 subjects = {'01' '02' '03' '04' '05' '06' '07' '08' '09' '10' '11' '12' '13' '14' '15' '16' '17' '18' '19' '20' };	% might change if and only if any subjects have to be excluded
+subjects = {'04'  };	
+
 
 for subject = 1:length(subjects)
 
@@ -11,6 +13,8 @@ for subject = 1:length(subjects)
 	set = [subj,'_charvis.set'];
  % set filename for raw input file; point to appropriate location of raw files
 	sourcefile = ['~/Desktop/charvis/raw/ch',subj,'.vhdr']
+	sourcefile = ['~/Desktop/jonafiles/charvistest4.vhdr']
+
 
 	% load raw file
 	EEG = pop_fileio(sourcefile);
@@ -18,31 +22,38 @@ for subject = 1:length(subjects)
 	% Set up channel config
 	% EEG=pop_chanedit(    ); 	% depends on channel configuration! Cannot be decided before we know the exact output of ActiCHamp.
 					% but generally, consists of adding the reference electrode and loading channel locations from EEGLAB defaults
-	% EEG = pop_reref( EEG, [],'refloc',struct('labels',{'A2'},'type',{''},'theta',{90},'radius',{0.75},'X',{3.6803e-15},'Y',{-60.1041},'Z',{-60.1041},'sph_theta',{-90},'sph_phi',{-45},'sph_radius',{85},'urchan',{17},'ref',{''},'datachan',{0})); % reref to average and reconstruct old ref; depends on chan config!
+	EEG=pop_chanedit(EEG, 'append',EEG.nbchan,'changefield',{EEG.nbchan+1 'labels' 'A2'},'setref',{'1:EEG.nbchan' 'A2'},'lookup','/home/jona/eeglab/plugins/dipfit2.2/standard_BESA/standard-10-5-cap385.elp');
+
+	EEG = pop_reref( EEG, [],'refloc',struct('labels',{'A2'},'type',{''},'theta',{90},'radius',{0.75},'X',{3.6803e-15},'Y',{-60.1041},'Z',{-60.1041},'sph_theta',{-90},'sph_phi',{-45},'sph_radius',{85},'urchan',{17},'ref',{''},'datachan',{0})); % reref to average and reconstruct old ref; depends on chan config!
+
+	EEG = pop_resample( EEG, 100);
 
 	% filter (low pass to increase stationarity for ICA ... is high pass necessary?)
-	EEG = pop_eegfiltnew(EEG, 1, 40, 16500, 0, [], 0);
+	EEG = pop_eegfiltnew(EEG, 1, 40);
 
 	% resample to save space
-	EEG = pop_resample( EEG, 100);
 
 	% run AMICA; reject data 5 times for the purpose of analysis only
 	[ EEG.icaweights, EEG.icasphere, mods ] = runamica12( EEG.data(:,:), 'do_reject',1,'numrej',5,'outdir','/home/jona/amicaouttmp4/','numprocs',8);
-
+end;
 
 	% AMICA was applied to filtered data to speed up the process, now we load raw data again and apply the weights
 	EEG = pop_fileio(sourcefile);
 
-	mods = loadmodout12('/home/jona/amicaouttmp4/');
-	EEG.icasphere = mods.S(1:mods.num_pcs,:); EEG.icaweights = mods.W(:,:,1); EEG.icawinv = mods.A(:,:,1);
-
 	% Set up channel config
 	% EEG=pop_chanedit(    ); 	% depends on channel configuration! Cannot be decided before we know the exact output of ActiCHamp.
 					% but generally, consists of adding the reference electrode and loading channel locations from EEGLAB defaults
-	% EEG = pop_reref( EEG, [],'refloc',struct('labels',{'A2'},'type',{''},'theta',{90},'radius',{0.75},'X',{3.6803e-15},'Y',{-60.1041},'Z',{-60.1041},'sph_theta',{-90},'sph_phi',{-45},'sph_radius',{85},'urchan',{17},'ref',{''},'datachan',{0})); % reref to average and reconstruct old ref; depends on chan config!
+	EEG=pop_chanedit(EEG, 'append',EEG.nbchan,'changefield',{EEG.nbchan+1 'labels' 'A2'},'setref',{'1:EEG.nbchan' 'A2'},'lookup','/home/jona/eeglab/plugins/dipfit2.2/standard_BESA/standard-10-5-cap385.elp');
+
+	EEG = pop_reref( EEG, [],'refloc',struct('labels',{'A2'},'type',{''},'theta',{90},'radius',{0.75},'X',{3.6803e-15},'Y',{-60.1041},'Z',{-60.1041},'sph_theta',{-90},'sph_phi',{-45},'sph_radius',{85},'urchan',{17},'ref',{''},'datachan',{0})); % reref to average and reconstruct old ref; depends on chan config!
+
+	EEG = pop_resample( EEG, 100);
+	mods = loadmodout12('/home/jona/amicaouttmp4/');
+	EEG.icasphere = mods.S(1:mods.num_pcs,:); EEG.icaweights = mods.W(:,:,1); EEG.icawinv = mods.A(:,:,1);
+
 
 	% filter (low pass to increase stationarity for ICA ... is high pass necessary?)
-	EEG = pop_eegfiltnew(EEG, 0.1, 40, 16500, 0, [], 0);
+	EEG = pop_eegfiltnew(EEG, 0.1, 40);
 
 
 	% labels

@@ -22,9 +22,13 @@ viol1 = {'S211'  'S212'  'S213' 'S214'}
 viol2 = {'S221' 'S223' 'S222' 'S224' }
 viol3 = { 'S231' 'S232' }
 
-channel = 13
 
-for S = 1:3
+
+viol = {'S211'  'S212'  'S213' 'S214' 'S221' 'S223' 'S222' 'S224'  'S231' 'S232' }
+
+channel = 3
+
+for S = 1:4
 
 
 
@@ -34,47 +38,59 @@ for S = 1:3
         
 
 EEG = pop_loadset('filename',filename,'filepath',filepath);
-EEG = pop_resample( EEG, 100);
+% EEG = pop_resample( EEG, 100);
 	EEG = pop_subcomp(EEG,find(EEG.reject.gcompreject));
 EEG.icasphere = []; EEG.icaweights = []; EEG.icawinv = [];
 EEG = pop_reref( EEG, [16 17] );
 
 EEG = pop_epoch( EEG, control1, [-1 3], 'epochinfo', 'yes');
+	[EEG, locthresh, globthresh, nrej] = pop_rejkurt(EEG, 1, [1:EEG.nbchan], 4, 4, 1, 1, 0);
+EEG = pop_eegthresh(EEG,1,[3] ,-100,100,-1,2.99,0,0);
+
 dat = squeeze(eeg_getdatact(EEG,'channel',channel));
 controlerp1=mean(dat,2);
 
 
 
 EEG = pop_loadset('filename',filename,'filepath',filepath);
-EEG = pop_resample( EEG, 100);
+% EEG = pop_resample( EEG, 100);
 	EEG = pop_subcomp(EEG,find(EEG.reject.gcompreject));
 EEG.icasphere = []; EEG.icaweights = []; EEG.icawinv = [];
 EEG = pop_reref( EEG, [16 17] );
 
 EEG = pop_epoch( EEG, control2, [-1 3], 'epochinfo', 'yes');
+	[EEG, locthresh, globthresh, nrej] = pop_rejkurt(EEG, 1, [1:EEG.nbchan], 4, 4, 1, 1, 0);
+EEG = pop_eegthresh(EEG,1,[3] ,-100,100,-1,2.99,0,0);
+
 dat = squeeze(eeg_getdatact(EEG,'channel',channel));
 controlerp2=mean(dat,2);
 
 
 
 EEG = pop_loadset('filename',filename,'filepath',filepath);
-EEG = pop_resample( EEG, 100);
+% EEG = pop_resample( EEG, 100);
 	EEG = pop_subcomp(EEG,find(EEG.reject.gcompreject));
 EEG.icasphere = []; EEG.icaweights = []; EEG.icawinv = [];
 EEG = pop_reref( EEG, [16 17] );
 
 EEG = pop_epoch( EEG, control3, [-1 3], 'epochinfo', 'yes');
+	[EEG, locthresh, globthresh, nrej] = pop_rejkurt(EEG, 1, [1:EEG.nbchan], 4, 4, 1, 1, 0);
+EEG = pop_eegthresh(EEG,1,[3] ,-100,100,-1,2.99,0,0);
+
 dat = squeeze(eeg_getdatact(EEG,'channel',channel));
 controlerp3=mean(dat,2);
 
 
 EEG = pop_loadset('filename',filename,'filepath',filepath);
-EEG = pop_resample( EEG, 100);
+% EEG = pop_resample( EEG, 100);
 	EEG = pop_subcomp(EEG,find(EEG.reject.gcompreject));
 EEG.icasphere = []; EEG.icaweights = []; EEG.icawinv = [];
 EEG = pop_reref( EEG, [16 17] );
 
 EEG = pop_epoch( EEG, viol1, [-1 3], 'epochinfo', 'yes');
+	[EEG, locthresh, globthresh, nrej] = pop_rejkurt(EEG, 1, [1:EEG.nbchan], 4, 4, 1, 1, 0);
+EEG = pop_eegthresh(EEG,1,[3] ,-100,100,-1,2.99,0,0);
+
 dat = squeeze(eeg_getdatact(EEG,'channel',channel));
 rtvar = eeg_getepochevent( EEG,{'S196'},[],'latency');
 
@@ -87,13 +103,16 @@ allrtvar = [rtvar,allrtvar];
 alldat=[dat,alldat];
 
 EEG = pop_loadset('filename',filename,'filepath',filepath);
-EEG = pop_resample( EEG, 100);
+% EEG = pop_resample( EEG, 100);
 	EEG = pop_subcomp(EEG,find(EEG.reject.gcompreject));
 EEG.icasphere = []; EEG.icaweights = []; EEG.icawinv = [];
 EEG = pop_reref( EEG, [16 17] );
 
 
 EEG = pop_epoch( EEG, viol2, [-1 3], 'epochinfo', 'yes');
+	[EEG, locthresh, globthresh, nrej] = pop_rejkurt(EEG, 1, [1:EEG.nbchan], 4, 4, 1, 1, 0);
+EEG = pop_eegthresh(EEG,1,[3] ,-100,100,-1,2.99,0,0);
+
 dat = squeeze(eeg_getdatact(EEG,'channel',channel));
 rtvar = eeg_getepochevent( EEG,{'S196'},[],'latency');
 
@@ -106,12 +125,16 @@ allrtvar = [rtvar,allrtvar];
 alldat=[dat,alldat];
 
 EEG = pop_loadset('filename',filename,'filepath',filepath);
-EEG = pop_resample( EEG, 100);
+% EEG = pop_resample( EEG, 100);
 	EEG = pop_subcomp(EEG,find(EEG.reject.gcompreject));
 EEG.icasphere = []; EEG.icaweights = []; EEG.icawinv = [];
 EEG = pop_reref( EEG, [16 17] );
 
 EEG = pop_epoch( EEG, viol3, [-1 3], 'epochinfo', 'yes');
+	[EEG, locthresh, globthresh, nrej] = pop_rejkurt(EEG, 1, [1:EEG.nbchan], 4, 4, 1, 1, 0);
+
+EEG = pop_eegthresh(EEG,1,[3] ,-100,100,-1,2.99,0,0);
+
 dat = squeeze(eeg_getdatact(EEG,'channel',channel));
 rtvar = eeg_getepochevent( EEG,{'S196'},[],'latency');
 
@@ -129,7 +152,9 @@ allrtvar=[];alldat=[];
 end;
 
 eegdata=[];rtdata=[];
-for x = 1:3
+for x = 1:4
+figure;[outdata6,outrtvar5,outtrials5] = erpimage(datas{x}, rts{x}, linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), 'PZ ERP sorted by reaction time', 6, 1 ,'erp',1,'avg_type','Gaussian','cbar','on','cbar_title','\muV');
+
 eegdata=[eegdata,datas{x}];
 rtdata=[rtdata,rts{x}];
 end;
@@ -146,6 +171,7 @@ figure;[outdata6,outrtvar5,outtrials5] = erpimage(eegdata, rtdata, linspace(EEG.
 
 
 
+figure;[outdata6,outrtvar5,outtrials5] = erpimage(datas{4}, rts{4}, linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), 'PZ ERP sorted by reaction time', 1, 1 ,'erp',1,'avg_type','Gaussian','cbar','on','cbar_title','\muV','nosort','on');
 
 
 
