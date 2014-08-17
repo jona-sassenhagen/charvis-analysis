@@ -16,6 +16,8 @@
 # has been submitted as a Registered Report to Cortex and has been granted
 # In Principle Acceptance.
 
+# Figshare account here: http://figshare.com/account/projects/2213
+
 # You can find these files here because my coworker Phillip Alday has 
 # proposed how a version control system tracking experimental analysis 
 # scripts can further improve scientific standards. You can find a 
