@@ -8,13 +8,13 @@
 # and EEGLAB/ERPLAB are GPL'd and can be downloaded at 
 # sccn.ucsd.edu/eeglab/‎ .
 
-# The data these scripts are intended for has not been collected 
-# so far. A manuscript describing the hypotheses behind this 
+# The data these scripts are intended for has now been collected 
+# and is in the process of being uploaded to a figshare account
+# that will be linked from here. 
+# A manuscript describing the hypotheses behind this 
 # experiment, and the analyses these scripts are intended to perform,
-# has been submitted as a Registered Report to Cortex and is awaiting
-# peer review and In Principle Acceptance. Raw data files these scripts
-# can be applied to will be uploaded to and hosted by Elsevier at an 
-# as of yet undisclosed location.
+# has been submitted as a Registered Report to Cortex and has been granted
+# In Principle Acceptance.
 
 # You can find these files here because my coworker Phillip Alday has 
 # proposed how a version control system tracking experimental analysis 
