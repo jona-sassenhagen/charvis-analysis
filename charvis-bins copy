@@ -1,0 +1,61 @@
+library("BayesFactor")
+
+df1=3
+df2=56
+l = 6
+N = 20
+
+binlats <- data.frame(F=1:l, pvals=1:l, BFs=1:l, rhos=1:l, es=I(vector(mode="list", length=l)), lats=I(vector(mode="list", length=l)), rts=I(vector(mode="list", length=l)), row.names = c("N4-sem","P6","P3","P6-RTalign","P3-rtalign","P6-sem"))
+
+
+format.df(binlats, dec=c(1,1,1,1,1,1,1,1)
+
+filltable <- function(condition,binlats){
+    sourcefile<-paste("./Charvis",condition,"4binf-rts-lats.csv",sep="-")
+
+    dat<-read.table(sourcefile,sep=",")
+
+    F<-as.numeric(dat[1])
+    binlats[condition,"F"]<-F
+    binlats[condition,"pvals"] <- 1-pf(F,3,56)
+    result<-oneWayAOV.Fstat(F, 20, 4, rscale = 1)
+    binlats[condition,"BFs"] <-exp(result[['bf']])
+    corrs = cor.test( binlats[[condition,"rts"]] , binlats[[condition,"lats"]] , method = "spearman")
+    binlats[condition,"rhos"]<-corrs[['estimate']]
+    binlats[[condition,"es"]]<-as.numeric(CI.eta.from.summary(F,df1,df2,N))
+
+    binlats[[condition,"lats"]]<-as.numeric((dat[9:12])*10)
+    binlats[[condition,"rts"]]<-as.numeric((dat[5:8]))
+
+    binlats
+
+}
+
+
+CI.eta.from.summary <- function(F,df1,df2,N){
+	etasquared <- F*df1/(F*df1+df2)
+	r = sqrt(etasquared)
+	Z = atanh(r)
+	SE = 1/(N-3)
+	CIlowerZ = Z-1.96*SE
+	CIupperZ = Z+1.96*SE
+	CIlowerEta = sqrt(tanh(CIlowerZ)*tanh(CIlowerZ))
+	CIupperEta = sqrt(tanh(CIupperZ)*tanh(CIupperZ))
+	esqrt = c(etasquared,CIlowerEta,CIupperEta)
+	esqrt
+}
+
+conds<-c("N4-sem","P6","P3","P6-RTalign","P3-rtalign","P6-sem")
+
+for (x in 1:length(conds)) { binlats <- (  filltable(conds[x],binlats)  )  }
+
+binlats
+
+
+
+write.table(format(binlats, digits=0), "", sep='\t',row.names=T)
+
+
+------------------------------------------------------------------------
+Condition   F   BF H~1~>H~0~    *rho*    Latencies (msec) RTs (msec)
+------------------------------------------------------------------------

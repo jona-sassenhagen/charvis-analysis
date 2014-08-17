@@ -25,7 +25,7 @@ control3={ 'S230'}
 
 for S = 1:n
 
-filename = ['/home/jona/Desktop/charvis/pre2/charvis_',num2str((S),'%02i'),'.set'];
+filename = ['/home/jona/Desktop/charvis/pre3/charvis_',num2str((S),'%02i'),'.set'];
 
 
 
@@ -39,8 +39,9 @@ for Z = 1:length(EEG.chanlocs);if strcmp(EEG.chanlocs(Z).labels,chan) == 1;chann
 
 EEG = pop_epoch( EEG, control1, [-1 3], 'epochinfo', 'yes');
 [EEG, locthresh, globthresh, nrej] = pop_rejkurt(EEG, 1, [1:EEG.nbchan], 5, 5, 1, 1, 0);
+EEG = pop_eegthresh(EEG,1,channel,-100,100,0.5,1.25,0,1);
 
-dat = squeeze(eeg_getdatact(EEG,'channel',channel,'rmcomps',[EEG.clusters.saccade EEG.clusters.blink]));
+dat = squeeze(eeg_getdatact(EEG,'channel',channel,'rmcomps',[EEG.blinks EEG.saccades]));
 controlerp1=mean(dat,2);
 
 EEG = pop_loadset('filename',filename);
@@ -48,8 +49,9 @@ EEG = pop_loadset('filename',filename);
 
 EEG = pop_epoch( EEG, control2, [-1 3], 'epochinfo', 'yes');
 [EEG, locthresh, globthresh, nrej] = pop_rejkurt(EEG, 1, [1:EEG.nbchan], 5, 5, 1, 1, 0);
+EEG = pop_eegthresh(EEG,1,channel,-100,100,0.5,1.25,0,1);
 
-dat = squeeze(eeg_getdatact(EEG,'channel',channel,'rmcomps',[EEG.clusters.saccade EEG.clusters.blink]));
+dat = squeeze(eeg_getdatact(EEG,'channel',channel,'rmcomps',[EEG.blinks EEG.saccades]));
 controlerp2=mean(dat,2);
 
 EEG = pop_loadset('filename',filename);
@@ -58,8 +60,9 @@ EEG = pop_loadset('filename',filename);
 
 EEG = pop_epoch( EEG, control3, [-1 3], 'epochinfo', 'yes');
 [EEG, locthresh, globthresh, nrej] = pop_rejkurt(EEG, 1, [1:EEG.nbchan], 5, 5, 1, 1, 0);
+EEG = pop_eegthresh(EEG,1,channel,-100,100,0.5,1.25,0,1);
 
-dat = squeeze(eeg_getdatact(EEG,'channel',channel,'rmcomps',[EEG.clusters.saccade EEG.clusters.blink]));
+dat = squeeze(eeg_getdatact(EEG,'channel',channel,'rmcomps',[EEG.blinks EEG.saccades]));
 controlerp3=mean(dat,2);
 
 
@@ -71,8 +74,9 @@ EEG = pop_loadset('filename',filename);
 
 EEG = pop_epoch( EEG, syn1, [-1 3], 'epochinfo', 'yes');
 [EEG, locthresh, globthresh, nrej] = pop_rejkurt(EEG, 1, [1:EEG.nbchan], 5, 5, 1, 1, 0);
+EEG = pop_eegthresh(EEG,1,channel,-100,100,0.5,1.25,0,1);
 
-dat = squeeze(eeg_getdatact(EEG,'channel',channel,'rmcomps',[EEG.clusters.saccade EEG.clusters.blink]));
+dat = squeeze(eeg_getdatact(EEG,'channel',channel,'rmcomps',[EEG.blinks EEG.saccades]));
 var = eeg_getepochevent( EEG,{'S196'},[],'latency');
 
 
@@ -89,8 +93,9 @@ EEG = pop_loadset('filename',filename);
 
 EEG = pop_epoch( EEG, syn2, [-1 3], 'epochinfo', 'yes');
 [EEG, locthresh, globthresh, nrej] = pop_rejkurt(EEG, 1, [1:EEG.nbchan], 5, 5, 1, 1, 0);
+EEG = pop_eegthresh(EEG,1,channel,-100,100,0.5,1.25,0,1);
 
-dat = squeeze(eeg_getdatact(EEG,'channel',channel,'rmcomps',[EEG.clusters.saccade EEG.clusters.blink]));
+dat = squeeze(eeg_getdatact(EEG,'channel',channel,'rmcomps',[EEG.blinks EEG.saccades]));
 var = eeg_getepochevent( EEG,{'S196'},[],'latency');
 
 
@@ -107,8 +112,9 @@ EEG = pop_loadset('filename',filename);
 
 EEG = pop_epoch( EEG, syn3, [-1 3], 'epochinfo', 'yes');
 [EEG, locthresh, globthresh, nrej] = pop_rejkurt(EEG, 1, [1:EEG.nbchan], 5, 5, 1, 1, 0);
+EEG = pop_eegthresh(EEG,1,channel,-100,100,0.5,1.25,0,1);
 
-dat = squeeze(eeg_getdatact(EEG,'channel',channel,'rmcomps',[EEG.clusters.saccade EEG.clusters.blink]));
+dat = squeeze(eeg_getdatact(EEG,'channel',channel,'rmcomps',[EEG.blinks EEG.saccades]));
 var = eeg_getepochevent( EEG,{'S196'},[],'latency');
 
 
@@ -129,8 +135,9 @@ EEG = pop_loadset('filename',filename);
 
 EEG = pop_epoch( EEG, sem1, [-1 3], 'epochinfo', 'yes');
 [EEG, locthresh, globthresh, nrej] = pop_rejkurt(EEG, 1, [1:EEG.nbchan], 5, 5, 1, 1, 0);
+EEG = pop_eegthresh(EEG,1,channel,-100,100,0.5,1.25,0,1);
 
-dat = squeeze(eeg_getdatact(EEG,'channel',channel,'rmcomps',[EEG.clusters.saccade EEG.clusters.blink]));
+dat = squeeze(eeg_getdatact(EEG,'channel',channel,'rmcomps',[EEG.blinks EEG.saccades]));
 var = eeg_getepochevent( EEG,{'S196'},[],'latency');
 
 
@@ -147,8 +154,9 @@ EEG = pop_loadset('filename',filename);
 
 EEG = pop_epoch( EEG, sem2, [-1 3], 'epochinfo', 'yes');
 [EEG, locthresh, globthresh, nrej] = pop_rejkurt(EEG, 1, [1:EEG.nbchan], 5, 5, 1, 1, 0);
+EEG = pop_eegthresh(EEG,1,channel,-100,100,0.5,1.25,0,1);
 
-dat = squeeze(eeg_getdatact(EEG,'channel',channel,'rmcomps',[EEG.clusters.saccade EEG.clusters.blink]));
+dat = squeeze(eeg_getdatact(EEG,'channel',channel,'rmcomps',[EEG.blinks EEG.saccades]));
 var = eeg_getepochevent( EEG,{'S196'},[],'latency');
 
 
@@ -165,8 +173,9 @@ EEG = pop_loadset('filename',filename);
 
 EEG = pop_epoch( EEG, sem3, [-1 3], 'epochinfo', 'yes');
 [EEG, locthresh, globthresh, nrej] = pop_rejkurt(EEG, 1, [1:EEG.nbchan], 5, 5, 1, 1, 0);
+EEG = pop_eegthresh(EEG,1,channel,-100,100,0.5,1.25,0,1);
 
-dat = squeeze(eeg_getdatact(EEG,'channel',channel,'rmcomps',[EEG.clusters.saccade EEG.clusters.blink]));
+dat = squeeze(eeg_getdatact(EEG,'channel',channel,'rmcomps',[EEG.blinks EEG.saccades]));
 var = eeg_getepochevent( EEG,{'S196'},[],'latency');
 
 
@@ -186,6 +195,9 @@ semdat=[dat,semdat];
 	var=[];semvar=[];synvar=[];semdat=[];syndat=[];
 end;
 
+rts = rts2
+datas = datas2
+
 rts(15)=[];
 datas(15)=[];
 rts(6)=[];
@@ -194,21 +206,21 @@ datas(6)=[];
 n=length(rts)
 
 
-figure;
+%figure;
 
 
 
 for x = 1:n
 
-	[outdata,outrtvar] = erpimage(datas{x}, rts{x}, linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), '', 1, 1 ,'NoShow','on');
-
+	[outdata,outrtvar] = erpimage(datas{x}, rts{x}, linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), '', 1, 1 ,'NoShow','on','filt',[0 20]);
+%,'baseline',[-500 0]
 	ntrials = length(outrtvar);
 	outdata = outdata(:,ntrials*.05:ntrials*.95);
 	outrtvar = outrtvar(ntrials*.05:ntrials*.95);
 	ntrials = length(outrtvar);
 
-	sbplot(4,5,x);
-	plotcurve ( EEG.times, [ mean(outdata(:,1:ntrials*1/4),2)  ; mean(outdata(:,ntrials*1/4:ntrials*2/4),2) ; mean(outdata(:,ntrials*2/4:ntrials*3/4),2) ;  mean(outdata(:,ntrials*3/4:end),2)])
+	%sbplot(4,5,x);
+	%plotcurve ( EEG.times, [ mean(outdata(:,1:ntrials*1/4),2)  ; mean(outdata(:,ntrials*1/4:ntrials*2/4),2) ; mean(outdata(:,ntrials*2/4:ntrials*3/4),2) ;  mean(outdata(:,ntrials*3/4:end),2)])
 
 	fasterp(x,:) = mean(outdata(:,1:ntrials*1/4),2);
 	mod1erp(x,:) = mean(outdata(:,ntrials*1/4:ntrials*2/4),2);
@@ -222,7 +234,7 @@ for x = 1:n
 
 end;
 
-figure;
+%figure;
 for x = 1:n
 
 	a = 1:n; a(x) = [];
@@ -238,8 +250,8 @@ for x = 1:n
 	jackslowrt(x) = mean(slowrt(a,:),1);
 
 
-	sbplot(4,5,x);
-	plotcurve ( EEG.times, [ jackfast(x,:) ; jackmod1(x,:) ; jackmod2(x,:) ; jackslow(x,:) ] );
+	%sbplot(4,5,x);
+	%plotcurve ( EEG.times, [ jackfast(x,:) ; jackmod1(x,:) ; jackmod2(x,:) ; jackslow(x,:) ] );
 
 end;
 
@@ -248,16 +260,16 @@ jackfast2=jackfast;jackmod12=jackmod1;jackmod22=jackmod2; jackslow2=jackslow;
 
 for y = 1:n
 	for x = 1:EEG.pnts
-		if jackfast(y,x) < 0
+		if jackfast(y,x) > 0
 			jackfast2(y,x) = 0;
 		end;
-		if jackmod1(y,x) < 0
+		if jackmod1(y,x) > 0
 			jackmod12(y,x) = 0;
 		end;
-		if jackmod2(y,x) < 0
+		if jackmod2(y,x) > 0
 			jackmod22(y,x) = 0;
 		end;
-		if jackslow(y,x) < 0
+		if jackslow(y,x) > 0
 			jackslow2(y,x) = 0;
 		end;
 	end;
@@ -267,16 +279,16 @@ for x = 1:n
 	
 	% deprecated: peak latency
 
-	erp = jackfast2(x,100:250);
+	erp = jackfast2(x,100:200);
 	[~,fastlat(x)] = min(abs(cumsum(erp)-sum(erp)/3));
 %	[~,fastlat(x)]  = max(erp);
-	erp = jackmod12(x,100:250);
+	erp = jackmod12(x,100:200);
 	[~,mod1lat(x)] = min(abs(cumsum(erp)-sum(erp)/3));
 %	[~,mod1lat(x)]  = max(erp);
-	erp = jackmod22(x,100:250);
+	erp = jackmod22(x,100:200);
 	[~,mod2lat(x)] = min(abs(cumsum(erp)-sum(erp)/3));
 %	[~,mod2lat(x)]  = max(erp);
-	erp = jackslow2(x,100:250);
+	erp = jackslow2(x,100:200);
 	[~,slowlat(x)] = min(abs(cumsum(erp)-sum(erp)/3));
 %	[~,slowlat(x)]  = max(erp);
 	
@@ -317,3 +329,90 @@ thirdbinf
 %erp_adjusted = bsxfun(@minus,erp_matrix(samples,:),min(erp_matrix(samples,:)));
 %[~,latency_indicies] = min(abs(bsxfun(@minus,cumsum(erp_adjusted),sum(erp_adjusted)/2)));
 %latencies = (EEG.xmin + (samples(1)+latency_indicies)/EEG.srate)*1000;
+
+
+figure;
+a = 1:20;x=1;
+
+	jackfast(x,:) = mean(fasterp(a,:),1);
+	jackmod1(x,:) = mean(mod1erp(a,:),1);
+	jackmod2(x,:) = mean(mod2erp(a,:),1);
+	jackslow(x,:) = mean(slowerp(a,:),1);
+
+	jackfastrt(x) = mean(fastrt(a,:),1);
+	jackmod1rt(x) = mean(mod1rt(a,:),1);
+	jackmod2rt(x) = mean(mod2rt(a,:),1);
+	jackslowrt(x) = mean(slowrt(a,:),1);
+
+plotcurve ( EEG.times, [ jackfast(x,:) ; jackmod1(x,:) ; jackmod2(x,:) ; jackslow(x,:) ] );
+
+
+
+
+
+
+
+for x = 1:n
+	
+	% deprecated: peak latency
+
+	erp = jackfast2(x,100:130);
+	fastmean(x) = mean(erp);
+	erp = jackfast2(x,100:200);
+	[~,fastpeak(x)] = min(erp);
+
+	erp = jackmod12(x,100:130);
+	mod1mean(x) = mean(erp);
+	erp = jackmod1(x,100:200);
+	[~,mod1peak(x)] = min(erp);
+
+
+	erp = jackmod22(x,100:130);
+	mod2mean(x) = mean(erp);
+	erp = jackmod22(x,100:200);
+	[~,mod2peak(x)] = min(erp);
+
+
+	erp = jackslow2(x,100:130);
+	slowmean(x) = mean(erp);
+	erp = jackslow2(x,100:200);
+	[~,slowpeak(x)] = min(erp);
+
+	
+end;
+
+
+
+a = [mean(jackfastrt), mean(jackmod1rt), mean(jackmod2rt), mean(jackslowrt)]
+b = [mean(fastpeak) mean(mod1peak) mean(mod2peak) mean(slowpeak)]
+[r,p] =corr(a.',b.')
+
+
+%% mean %%
+
+statmatrix2 = [fastmean.' mod1mean.' mod2mean.' slowmean.']
+[stats,table]=mes1way(statmatrix2,'partialeta2','isdep',1);
+anovaf = (cell2mat(table(2,5))) / (stats.n(1) -1)^2;
+
+
+[stats,table]=mes1way(statmatrix2(:,1:2),'partialeta2','isdep',1);
+firstbinf = (cell2mat(table(2,5))) / (stats.n(1) -1)^2;
+
+[stats,table]=mes1way(statmatrix2(:,2:3),'partialeta2','isdep',1);
+secondbinf = (cell2mat(table(2,5))) / (stats.n(1) -1)^2;
+
+[stats,table]=mes1way(statmatrix2(:,3:4),'partialeta2','isdep',1);
+thirdbinf = (cell2mat(table(2,5))) / (stats.n(1) -1)^2;
+
+[stats,table]=mes1way(statmatrix2(:,[1 4]),'partialeta2','isdep',1);
+onetofour = (cell2mat(table(2,5))) / (stats.n(1) -1)^2;
+
+
+anovaf
+firstbinf
+secondbinf
+thirdbinf
+onetofour
+
+%result <- oneWayAOV.Fstat(2.3, 20, 4, rscale = 1)
+%result[['bf']]

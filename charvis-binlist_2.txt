@@ -1,0 +1,44 @@
+bin1 
+Language Control
+.{210}
+
+bin2
+Language Syntax Violation
+.{211;213}
+
+bin3
+Language Semantic Violation
+.{212;214}
+
+
+
+
+
+bin4 
+Language Control
+.{220}
+
+bin5
+Language Syntax Violation
+.{221}
+
+bin6
+Language Semantic Violation
+.{222}
+
+
+
+
+bin7 
+Language Control
+.{230}
+
+bin8
+Language Syntax Violation
+.{231}
+
+bin9
+Language Semantic Violation
+.{232}
+
+

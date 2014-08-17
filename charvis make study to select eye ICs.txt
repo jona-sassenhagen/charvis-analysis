@@ -2,14 +2,16 @@
 
 % Script for building an eeglab study for Experiment charvis and identifying eye ICs
 % This script collects individual, pre-processed subject data into an EEGLAB .study structure so you can automatically identify eye ICs using the EEGLAB plugin CORRMAP; it builds heavily on Viola's original CORRMAP scripts. CORRMAP identifies the best fit for a user-selected template across the whole study. Here, I feed CORRMAP an eye blink template and let it automatically select the blink ICs for all other subjects, so I can remove them later on.
-% You will probably need to modify all file locations
+% You will probably need to modify all file locations.
+
+% Templates have to be selected manually and are hardcorded here!
 
 eeglab;
 
 % set path where to find preprocessed data
-pathin = '~/Desktop/charvis/'
+pathin = '~/Desktop/charvis/pre2/'
 % set path where to save .study file
-pathout = '~/Desktop/charvis//'
+pathout = '~/Desktop/charvis/pre2/'
 % .study file name
 studyname = 'charvis'
 
@@ -20,7 +22,7 @@ STUDY=[];ALLEEG=[];
 n=length(list); %number of datasets that are going to be included in STUDY
 
 % loop to build .study
-for i= 1:20
+for i= 1:length(list)
     %creating the study
     [STUDY ALLEEG]= std_editset(STUDY, ALLEEG,'name', studyname, 'commands', {...
         {'index', i,'load', [pathin,list(i).name],'subject',num2str(i)}
@@ -33,64 +35,54 @@ end
 % make a .study design and compute measures necessary for CORRMAP and basic clustering
 STUDY = std_makedesign(STUDY, ALLEEG,1,'name','probe','variable1','condition');
 STUDY = std_selectdesign(STUDY, ALLEEG, 1);
-[STUDY ALLEEG] = std_precomp(STUDY, ALLEEG, 'components','recompute','on','erp','on','scalp','on','spec','on','specparams',{'specmode' 'fft' 'logtrials' 'off'});
+[STUDY ALLEEG] = std_precomp(STUDY, ALLEEG, 'components','recompute','on','scalp','on','spec','on','specparams',{'specmode' 'fft' 'logtrials' 'off'});
 % build standard clusters using basic measures (spectra at weight 1, scalp maps at weight 10 and dipoles at weight 1)
 [STUDY ALLEEG] = std_preclust(STUDY, ALLEEG, 1,{'spec' 'npca' 10 'norm' 1 'weight' 1 'freqrange' [3 25] },{'scalpGrad' 'npca' 30 'norm' 1 'weight' 10 'abso' 0});
 
+[STUDY ALLEEG] = pop_savestudy(STUDY,'filename', 'charvis.study', 'filepath',pathout);
 
-% use corrmap to find blink component; the value (IC 1 of subject 17) is hard-coded (1, 17 was the blink template in the experiment I adapted this script from)
-[STUDY ALLEEG] = pop_loadstudy('filename', 'charvis.study', 'filepath', '/~/Desktop/charvis/');
-  [CORRMAP,STUDY,ALLEEG]=corrmap(STUDY,ALLEEG,17,1,'th','auto','ics',3,'title','clname','saccade','badcomps,'yes');
-
-% for each subject, enter those of their clusters now in the new cos 2 into the respective subject's ".blink" field
-CLS =2; 
-cls = num2str(CLS); comps = [(STUDY.cluster(CLS).sets(1,:));STUDY.cluster(CLS).comps]
-for component = 1:length(comps)
-set = num2str(comps(1,component),'%02i');
-IC = (comps(2,component));
-setname = [num2str((set),'%02i'),'_char_long.set'];
-	EEG = pop_loadset('filename',setname,'filepath','~/Desktop/charvis/');
-EEG.clusters.blink = [EEG.clusters.blink, IC];
-EEG = pop_saveset(EEG,'savemode','resave');
-end;
+pop_corrmap(STUDY,ALLEEG,3, 1,'chanlocs','','th','auto','ics',2,'title','blinks','clname','blinks','badcomps','no', 'resetclusters','off');
 
 
+sets = STUDY.cluster(3).sets;
+comps = STUDY.cluster(3).comps;
 
-% use corrmap to find saccade component
-[STUDY ALLEEG] = pop_loadstudy('filename', 'charvis.study', 'filepath', '/~/Desktop/charvis/');
-  [CORRMAP,STUDY,ALLEEG]=corrmap(STUDY,ALLEEG,1,3,'th','auto','ics',3,'title','clname','saccade','badcomps,'yes');
-
-
-% for each subject, enter those of their clusters now in the new cos 2 into the respective subject's ".saccade" field
-CLS =2; 
-cls = num2str(CLS); comps = [(STUDY.cluster(CLS).sets(1,:));STUDY.cluster(CLS).comps]
-for component = 1:length(comps)
-set = num2str(comps(1,component),'%02i');
-IC = (comps(2,component));
-setname = [num2str((set),'%02i'),'_char_long.set'];
-	EEG = pop_loadset('filename',setname,'filepath','~/Desktop/charvis/');
-EEG.clusters.saccade = [EEG.clusters.saccade, IC];
-EEG = pop_saveset(EEG,'savemode','resave');
-end;
-
-% also, write all .blink and .saccade ICs into EEG.reject.gcompreject
-subjects = {'01' '02' '03' '04' '05' '06' '07' '08' '09' '10' '11' '12' '13' '14' '15' '16' '17'  '18' '19' '20' };
+for I = 1:length(sets)
+    Y = sets(I)
+    comp = comps(I)
+    fileloc = STUDY.datasetinfo(Y).filename
+    EEG = pop_loadset('filename',fileloc,'filepath',STUDY.datasetinfo(Y).filepath);
+    EEG.blinks = [];
+    EEG.saccades = [];
+    pop_saveset(EEG,'filename',fileloc,'filepath',STUDY.datasetinfo(Y).filepath);
+end
 
 
-for subject = 1:length(subjects)
-	subj = subjects{subject};
 
-	ica = [subj,'_char_long.set'];
-EEG = pop_loadset(  'filename',ica,'filepath','~/Desktop/charvis/');
+for I = 1:length(sets)
+    Y = sets(I)
+    comp = comps(I)
+    fileloc = STUDY.datasetinfo(Y).filename
+    EEG = pop_loadset('filename',fileloc,'filepath',STUDY.datasetinfo(Y).filepath);
+    EEG.blinks = [EEG.blinks, comp];
+    pop_saveset(EEG,'filename',fileloc,'filepath',STUDY.datasetinfo(Y).filepath);
+	EEG.blinks
+end
 
-for IC = EEG.clusters.blink
-	EEG.reject.gcompreject(IC) = IC;
-end;
 
-for IC = EEG.clusters.saccade
-	EEG.reject.gcompreject(IC) = IC;
-end;
+pop_corrmap(STUDY,ALLEEG,3, 7,'chanlocs','','th','auto','ics',2,'title','saccades','clname','saccades','badcomps','no', 'resetclusters','off');
 
-EEG = pop_saveset( EEG, 'filename',ica,'filepath','~/Desktop/charvis');
 
-end;
+sets = STUDY.cluster(4).sets;
+comps = STUDY.cluster(4).comps;
+
+
+for I = 1:length(sets)
+    Y = sets(I)
+    comp = comps(I)
+    fileloc = STUDY.datasetinfo(Y).filename
+    EEG = pop_loadset('filename',fileloc,'filepath',STUDY.datasetinfo(Y).filepath);
+    EEG.saccades = [EEG.saccades, comp];
+    pop_saveset(EEG,'filename',fileloc,'filepath',STUDY.datasetinfo(Y).filepath);
+	EEG.saccades
+end

@@ -184,69 +184,110 @@ end
 
 % plot resulting diff single trials
 
-
 % first, covertly sort and apply gaussian smoothing for presentation locked and response locked syn trials
-[syntrials1,synlats1] = erpimage(syndat, synvar, linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), 'syn', 30, 1, 'avg_type','Gaussian','NoShow','on','baseline',[-1000 0]);
-[syntrials2,synlats2] = erpimage(syndat, synvar, linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), '', 30, 1, 'avg_type','Gaussian','NoShow','on','align',inf,'baseline',[-1000 0]);
-
-
-% now, plot both in one plot for syn
-figure; 
-sbplot(2,1,1)
-erpimage([syntrials1 syntrials2], [zeros(1,length(synlats1)) ones(1,length(synlats2))*mean(synlats2)], linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), 'syn', 1, 1 , 'erp',1, 'cbar','on','nosort','on','auxvar',[synlats1 mean(synlats2)-synlats2], 'yerplabel','\muV','limits',[NaN NaN -5 15],'horz',[length(synlats1)],'cbar_title','\muV')
-
-
-
-
-%figure;[syntrials1,synlats1] = erpimage(syndat, synvar, linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), 'syn', 16, 1,'avg_type','Gaussian', 'baseline',[-1000 0],'erp',4);
-
-
-%figure; erpimage([syntrials1 ], [zeros(1,length(synlats1)) ], linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), 'syn', 1, 1 , 'erp',4, 'cbar','on','nosort','on','auxvar',[synlats1 ], 'yerplabel','\muV','limits',[NaN NaN -5 15],'cbar_title','\muV')
-
-
-%figure; erpimage([ syntrials2], [ones(1,length(synlats2))*mean(synlats2)], linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), 'syn', 10, 1 , 'erp',4, 'cbar','on','nosort','on','auxvar',[ mean(synlats2)-synlats2], 'yerplabel','\muV','limits',[NaN NaN -5 15],'cbar_title','\muV')
-
+[syntrials1,synlats1] = erpimage(syndat, synvar, linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), 'syn', 15, 1, 'avg_type','Gaussian','NoShow','on','baseline',[-1000 0]);
+[syntrials2,synlats2] = erpimage(syndat, synvar, linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), '', 15, 1, 'avg_type','Gaussian','NoShow','on','align',inf,'baseline',[-1000 0]);
 
 % next, covertly sort and apply gaussian smoothing for presentation locked and response locked sem trials
-[semtrials1,semlats1] = erpimage(semdat, semvar, linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), 'sem', 30, 1, 'avg_type','Gaussian','NoShow','on','baseline',[-1000 0]);
-[semtrials2,semlats2] = erpimage(semdat, semvar, linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), '', 30, 1, 'avg_type','Gaussian','NoShow','on','align',inf,'baseline',[-1000 0]);
-
-% now, plot both in one plot for sem
-%figure; erpimage([semtrials1 semtrials2], [zeros(1,length(semlats1)) ones(1,length(semlats2))*mean(semlats2)], linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), 'sem', 1, 1 , 'erp',1, 'cbar','on','nosort','on','auxvar',[semlats1 mean(semlats2)-semlats2], 'yerplabel','\muV','limits',[NaN NaN -5 15],'horz',[length(semlats1)],'cbar_title','\muV')
-
-
-sbplot(2,1,2)
-%figure; 
-erpimage([semtrials1 semtrials2], [zeros(1,length(semlats1)) ones(1,length(semlats2))*mean(semlats2)], linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), 'sem', 1, 1 , 'erp',1, 'cbar','on','nosort','on','auxvar',[semlats1 mean(semlats2)-semlats2], 'yerplabel','\muV','limits',[NaN NaN -5 15],'horz',[length(semlats1)],'cbar_title','\muV')
+[semtrials1,semlats1] = erpimage(semdat, semvar, linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), 'sem', 15, 1, 'avg_type','Gaussian','NoShow','on','baseline',[-1000 0]);
+[semtrials2,semlats2] = erpimage(semdat, semvar, linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), '', 15, 1, 'avg_type','Gaussian','NoShow','on','align',inf,'baseline',[-1000 0]);
 
 
 
+% empty containers
+ALLEEG=[];EEG=[];targetdata=[];targetvar=[];
+
+n = 22
+
+% triggers
+target =  {  'S 88'  }
+nontarget = {'S 10' 'S 11' 'S 12' 'S 13' 'S 14' 'S 15' 'S 16' 'S 17' 'S 20' 'S 21' 'S 22' 'S 23' 'S 24' 'S 25' 'S 26' 'S 27' 'S 30' 'S 31' 'S 32' 'S 33' 'S 34' 'S 35' 'S 36' 'S 37' 'S 40' 'S 41' 'S 42' 'S 43' 'S 44' 'S 45' 'S 46' 'S 47'  }
+
+% select channel
 
 
-%[syntrials1,synlats1] = erpimage(syndat, synvar, linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), '', 1, 1 , 'avg_type','Gaussian','NoShow','off','baseline',[-1000 0],'erp',4);
+% main data collection loop
+
+for S = 1:n
+
+filename = ['/home/jona/Desktop/charvis/pre2/charvisp3_',num2str((S),'%02i'),'.set'];
 
 
-%[syntrials1,synlats1] = erpimage(semdat, semvar, linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), '', 1, 1 , 'avg_type','Gaussian','NoShow','off','baseline',[-1000 0],'erp',4);
 
-%[syntrials1,synlats1] = erpimage([semdat,syndat], [semvar,synvar], linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), '', 1, 1 , 'avg_type','Gaussian','NoShow','off','baseline',[-1000 0],'erp',4);
+% collect control trials for all 3 positions
+
+EEG = pop_loadset('filename',filename);
+
+chan = 'Pz';
+for Z = 1:length(EEG.chanlocs);if strcmp(EEG.chanlocs(Z).labels,chan) == 1;channel = Z;end;end;
 
 
-%figure; erpimage( mean(EEG.data([13], :),1), eeg_getepochevent( EEG, {'S196'},[],'latency'), linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), 'Pz', 10, 1 ,'yerplabel','\muV','erp','on','cbar','on','topo', { [13] EEG.chanlocs EEG.chaninfo } , 'align', inf);
- 
+EEG2 = pop_epoch( EEG, target, [-2 3], 'epochinfo', 'yes');
+[EEG2, locthresh, globthresh, nrej] = pop_rejkurt(EEG2, 1, [1:EEG.nbchan], 5, 5, 1, 1, 0);
+EEG2 = pop_eegthresh(EEG2,1,channel,-100,100,0.5,1.25,0,1);
+
+dat = squeeze(eeg_getdatact(EEG2,'channel',channel,'rmcomps',[EEG.saccades EEG.blinks]));
+var = eeg_getepochevent( EEG2,{'S196'},[],'latency');
+
+EEG3 = pop_epoch( EEG, nontarget, [-2 3], 'epochinfo', 'yes');
+[EEG3, locthresh, globthresh, nrej] = pop_rejkurt(EEG3, 1, [1:EEG.nbchan], 5, 5, 1, 1, 0);
+EEG3 = pop_eegthresh(EEG3,1,channel,-100,100,0.5,1.25,0,1);
+
+dat2 = squeeze(eeg_getdatact(EEG3,'channel',channel,'rmcomps',[EEG.saccades EEG.blinks]));
+
+controlerp = mean(dat2,2);
+
+for ii=1:length(dat(1,:))
+ dat(:,ii)=dat(:,ii)-controlerp;
+end
+
+targetvar = [var,targetvar];
+targetdata=[dat,targetdata];
+
+
+
+end
+
+
+[p3trials1,p3lats1] = erpimage(targetdata, targetvar, linspace(EEG2.xmin*1000, EEG2.xmax*1000, EEG2.pnts), '', 30, 1 , 'avg_type','Gaussian','NoShow','on','baseline',[-1000 0]);
+[p3trials2,p3lats2] = erpimage(targetdata, targetvar, linspace(EEG2.xmin*1000, EEG2.xmax*1000, EEG2.pnts), '', 30, 1 , 'avg_type','Gaussian','NoShow','on','baseline',[-1000 0],'align',inf);
+
 
 
 
 figure; 
+sbplot(2,3,1) 
+erpimage(p3trials1, zeros(1,length(p3lats1)), linspace(EEG2.xmin*1000, EEG2.xmax*1000, EEG2.pnts), 'Face Detection', 1, 1 , 'erp',4, 'cbar','off','nosort','on','auxvar',p3lats1 , 'yerplabel','\muV','limits',[NaN NaN -5 15],'cbar_title','\muV');
+
+
+sbplot(2,3,4)
+erpimage(p3trials2, ones(1,length(p3lats2))*mean(p3lats2), linspace(EEG2.xmin*1000, EEG2.xmax*1000, EEG2.pnts), '', 1, 1 , 'erp',4, 'cbar','off','nosort','on','auxvar',mean(p3lats2)-p3lats2, 'yerplabel','\muV','limits',[NaN NaN -5 15],'cbar_title','\muV');
 
 sbplot(2,3,2)
-erpimage(syntrials1, zeros(1,length(synlats1)), linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), 'syn', 1, 1 , 'erp',4, 'cbar','off','nosort','on','auxvar',synlats1 , 'yerplabel','\muV','limits',[NaN NaN -5 15],'cbar_title','\muV')
+erpimage(syntrials1, zeros(1,length(synlats1)), linspace(EEG2.xmin*1000, EEG2.xmax*1000, EEG2.pnts), 'Syntax', 1, 1 , 'erp',4, 'cbar','off','nosort','on','auxvar',synlats1 , 'yerplabel','\muV','limits',[NaN NaN -5 15],'cbar_title','\muV')
 
 sbplot(2,3,5)
-erpimage(syntrials2, ones(1,length(synlats2))*mean(synlats2), linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), 'syn', 1, 1 , 'erp',4, 'cbar','off','nosort','on','auxvar',mean(synlats2)-synlats2, 'yerplabel','\muV','limits',[NaN NaN -5 15],'cbar_title','\muV')
+erpimage(syntrials2, ones(1,length(synlats2))*mean(synlats2), linspace(EEG2.xmin*1000, EEG2.xmax*1000, EEG2.pnts), '', 1, 1 , 'erp',4, 'cbar','off','nosort','on','auxvar',mean(synlats2)-synlats2, 'yerplabel','\muV','limits',[NaN NaN -5 15],'cbar_title','\muV')
 
 
 sbplot(2,3,3)
-erpimage(semtrials1, zeros(1,length(semlats1)), linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), 'sem', 1, 1 , 'erp',4, 'cbar','off','nosort','on','auxvar',semlats1 , 'yerplabel','\muV','limits',[NaN NaN -5 15],'cbar_title','\muV')
+erpimage(semtrials1, zeros(1,length(semlats1)), linspace(EEG2.xmin*1000, EEG2.xmax*1000, EEG2.pnts), 'Semantics', 1, 1 , 'erp',4, 'cbar','off','nosort','on','auxvar',semlats1 , 'yerplabel','\muV','limits',[NaN NaN -5 15],'cbar_title','\muV')
 
 sbplot(2,3,6)
-erpimage(semtrials2, ones(1,length(semlats2))*mean(semlats2), linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts), 'sem', 1, 1 , 'erp',4, 'cbar','off','nosort','on','auxvar',mean(semlats2)-semlats2, 'yerplabel','\muV','limits',[NaN NaN -5 15],'cbar_title','\muV')
+erpimage(semtrials2, ones(1,length(semlats2))*mean(semlats2), linspace(EEG2.xmin*1000, EEG2.xmax*1000, EEG2.pnts), '', 1, 1 , 'erp',4, 'cbar','off','nosort','on','auxvar',mean(semlats2)-semlats2, 'yerplabel','\muV','limits',[NaN NaN -5 15],'cbar_title','\muV')
+
+
+
+
+ylabel(gca,'Stimulus Alignment')
+set(gca,'YTick',[])
+ylabel(gca,'RT Alignment')
+set(gca,'YTick',[])
+ylabel(gca,'')
+set(gca,'YTick',[])
+
+set(gca,'YTick',[-5 10])
+
+
+set(gcf, 'paperpositionmode', 'auto');
+print -depsc charvis-erpim.eps;

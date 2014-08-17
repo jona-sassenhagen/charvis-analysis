@@ -1,11 +1,27 @@
 bin1 
-syntactic violations
-.{211;221;231;213;223}{t<1-2500>196}
+Language Control
+.{210;220;230}
 
 bin2
-semantic violations
-.{212;222;232;214;224}{t<1-2500>196}
+Language Syntax Violation
+.{211;213;221;231}
 
 bin3
-control
-.{210;220;230}{t<1-2500>196}
+Language Semantic Violation
+.{212;214;222;232}
+
+bin4
+Faces Control
+.{10;11;12;13;14;15;16;17;20;21;22;23;24;25;26;27;30;31;32;33;34;35;36;37;40;41;42;43;44;45;46;47}
+
+bin5
+Faces Target
+.{88}
+
+
+
+
+
+
+
+

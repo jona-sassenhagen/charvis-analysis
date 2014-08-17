@@ -1,0 +1,50 @@
+conds<-c("N4-Pz","P6-sem","P6","P3")
+allcorr = data.frame(P6 = 1:20)
+
+for (x in conds) {
+sourcefile = paste("/home/jona/experiments/charvis/csv/Charvis-Woody-zscores-",x,".csv",sep="")
+allcorr[x] = c(as.numeric(read.table(sourcefile,sep=",")))
+}
+
+allcorr = tanh(allcorr)
+
+
+sourcefile = '~/experiments/charvis/csv/Charvis-to_correlogram.csv'
+
+a = (read.table(sourcefile,sep=","))
+
+allcorr = cbind(allcorr, lapply(a,as.numeric) )
+
+colnames(allcorr) = c("Corr. N4/RT","Corr. P6/RT (sem.)","Corr. P6/RT","Corr. P3/RT" , "P3 RT", "P3 ampl.", "P3 latency", "Acc. P3", "P6 RT", "P6 ampl.", "P6 latency", "Acc. P6", "P6 RT (sem.)", "P6 ampl. (sem.)", "P6 latency (sem.)", "Acc. P6 (sem.)", "N4 ampl.", "N4 latency")
+
+m = length(allcorr)
+
+matr = matrix(nrow=m,ncol=m)
+
+for(x in 1:m) {
+        for(y in 1:m) {
+                      matr[x,y] <- cor(allcorr[,x],allcorr[,y])
+                      }
+    }
+
+
+colnames(matr) = c("Corr. N4/RT","Corr. P6/RT (sem.)","Corr. P6/RT","Corr. P3/RT" , "P3 RT", "P3 ampl.", "P3 latency", "Acc. P3", "P6 RT", "P6 ampl.", "P6 latency", "Acc. P6", "P6 RT (sem.)", "P6 ampl. (sem.)", "P6 latency (sem.)", "Acc. P6 (sem.)", "N4 ampl.", "N4 latency")
+rownames(matr) = c("Corr. N4/RT","Corr. P6/RT (sem.)","Corr. P6/RT","Corr. P3/RT" , "P3 RT", "P3 ampl.", "P3 latency", "Acc. P3", "P6 RT", "P6 ampl.", "P6 latency", "Acc. P6", "P6 RT (sem.)", "P6 ampl. (sem.)", "P6 latency (sem.)", "Acc. P6 (sem.)", "N4 ampl.", "N4 latency")
+
+
+colnames(matr) = c("Corr.\nN4/RT","Corr.\nP6/RT\n(sem.)","Corr.\nP6/RT","Corr.\nP3/RT" , "P3\nRT", "P3\nampl.", "P3\nlatency", "Acc.\nP3", "P6\nRT", "P6\nampl.", "P6\nlatency", "Acc.\nP6", "P6\nRT\n(sem.)", "P6\nampl.\n(sem.)", "P6\nlatency\n(sem.)", "Acc.\nP6\n(sem.)", "N4\nampl.", "N4\nlatency")
+
+
+corrplot.mixed(matr[1:4,1:4] , upper = "square" , order = "FPC")
+
+
+corrplot.mixed(matr , upper = "square" , order = "FPC")
+
+
+library(corrgram) 
+corrgram(matr[1:4,1:4],lower.panel=panel.shade, upper.panel=panel.conf, diag.panel=panel.minmax)
+
+
+pdf(file="charvis_corrplot.pdf", width = 14, height = 13)
+corrplot.mixed(matr , upper = "square" , order = "FPC")
+dev.off()
